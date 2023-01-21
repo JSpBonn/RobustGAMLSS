@@ -169,7 +169,7 @@ library(EnvStats)    # needed for our offset calculation
 c_generate_Gamma <- function(outcome , tau = 0.05 ){
   log_like_c <- dgamma(outcome,scale = egamma(outcome)$parameters[2],shape=egamma(outcome)$parameters[1],log = TRUE)
   quant_c <- quantile(log_like_c,probs = tau)
-  bl <- max(exp(-zu)-1,0.000001)       # lower boundary to secure an adequate value of C
+  bl <- max(exp(-quant_c)-1,0.000001)       # lower boundary to secure an adequate value of C
   c_tau <- max(log(bl),0.25,na.rm = F) # lower boundary to secure an adequate value of C
   return(c_tau)
 }
