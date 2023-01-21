@@ -30,28 +30,28 @@ c_value_Gamma <- c_generate_Gamma(bodyfat$DEXfat) # default for tau=0.05
 stopping=400
 
 set.seed(321)
-glmLSS_Gaussian <- glmboostLSS(DEXfat~. , method = "noncyclic" , control = boost_control(mstop=stopping) , families = robust_GaussianLSS(stabilization = "MAD",rob=c_value_Gaussian), data = bodyfat)
-cvr_Gaussian <- cvrisk(glmLSS_Gaussian) # default method is 25-fold bootstrap
-coef(glmLSS_Gaussian[mstop(cvr_Gaussian)] , off2int=TRUE , which="") #  coefficients of glmLSS_Gaussian at optimal stopping iteration for cvrisk
+glmLSS_robustGaussian <- glmboostLSS(DEXfat~. , method = "noncyclic" , control = boost_control(mstop=stopping) , families = robust_GaussianLSS(stabilization = "MAD",rob=c_value_Gaussian), data = bodyfat)
+cvr_robustGaussian <- cvrisk(glmLSS_robustGaussian) # default method is 25-fold bootstrap
+coef(glmLSS_robustGaussian[mstop(cvr_robustGaussian)] , off2int=TRUE , which="") #  coefficients of glmLSS_Gaussian at optimal stopping iteration for cvrisk
 
 set.seed(321)
-glmLSS_Gamma <- glmboostLSS(DEXfat~. , method = "noncyclic" , control = boost_control(mstop=stopping) , families = robust_GaussianLSS(stabilization = "MAD",rob=c_value_Gamma), data = bodyfat)
-cvr_Gamma <- cvrisk(glmLSS_Gamma) # default method is 25-fold bootstrap
-coef(glmLSS_Gamma[mstop(cvr_Gamma)] , off2int=TRUE , which="")  # coefficients of glmLSS_Gamma at optimal stopping iteration for cvrisk
+glmLSS_robustGamma <- glmboostLSS(DEXfat~. , method = "noncyclic" , control = boost_control(mstop=stopping) , families = robust_GaussianLSS(stabilization = "MAD",rob=c_value_Gamma), data = bodyfat)
+cvr_Gamma <- cvrisk(glmLSS_robustGamma) # default method is 25-fold bootstrap
+coef(glmLSS_robustGamma[mstop(cvr_robustGamma)] , off2int=TRUE , which="")  # coefficients of glmLSS_Gamma at optimal stopping iteration for cvrisk
 
-plot(glmLSS_Gaussian)
-plot(glmLSS_Gamma)
+plot(glmLSS_robustGaussian)
+plot(glmLSS_robustGamma)
 
 
 # for specific covariates:
 set.seed(321)
-glmLSS_Gaussian_2 <- glmboostLSS(DEXfat ~ age + waistcirc , method = "noncyclic" , control = boost_control(mstop=stopping) , families = robust_GaussianLSS(stabilization = "MAD",rob=c_value_Gaussian), data = bodyfat)
-#cvr_Gaussian_2 <- cvrisk(glmLSS_Gaussian_2) # default method is 25-fold bootstrap
-#coef(glmLSS_Gaussian_2[mstop(cvr_Gaussian_2)],off2int=TRUE)
+glmLSS_robustGaussian_2 <- glmboostLSS(DEXfat ~ age + waistcirc , method = "noncyclic" , control = boost_control(mstop=stopping) , families = robust_GaussianLSS(stabilization = "MAD",rob=c_value_Gaussian), data = bodyfat)
+#cvr_robustGaussian_2 <- cvrisk(glmLSS_robustGaussian_2) # default method is 25-fold bootstrap
+#coef(glmLSS_robustGaussian_2[mstop(cvr_robustGaussian_2)],off2int=TRUE)
 
 set.seed(321)
-glmLSS_Gamma_2 <- glmboostLSS(DEXfat ~ age + waistcirc , method = "noncyclic" , control = boost_control(mstop=stopping) , families = robust_GaussianLSS(stabilization = "MAD",rob=c_value_Gamma), data = bodyfat)
-#cvr_Gamma_2 <- cvrisk(glmLSS_Gamma_2) # default method is 25-fold bootstrap
-#coef(glmLSS_Gamma_2[mstop(cvr_Gamma_2)],off2int=TRUE)
+glmLSS_robustGamma_2 <- glmboostLSS(DEXfat ~ age + waistcirc , method = "noncyclic" , control = boost_control(mstop=stopping) , families = robust_GaussianLSS(stabilization = "MAD",rob=c_value_Gamma), data = bodyfat)
+#cvr_robustGamma_2 <- cvrisk(glmLSS_robustGamma_2) # default method is 25-fold bootstrap
+#coef(glmLSS_robustGamma_2[mstop(cvr_robustGamma_2)],off2int=TRUE)
 
 ```
