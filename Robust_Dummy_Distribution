@@ -1,0 +1,141 @@
+# DO NOT EXECUTE THE FOLLOWING CODE -- DUMMY CODE:
+
+#library(mboost)
+#library("gamboostLSS")
+
+############################################################################################################
+############################################################################################################
+
+# Manuel for robust Families-object
+
+# Create your own robust gamboostLSS Families-object from an already existing non-robust Families-object, e.g.,DummyDistribution ~ D(mu,sigma)
+# we can reuse the loss = negative log-likelihood and the ngradient from the previous non-robust Families-object
+
+
+
+# determination of data driven robustness constant "c" for quantiles "tau":
+# use only outcome values with weight = 1
+c_generate_DummyDistribution <- function(outcome , tau = 0.05 ){
+  log_like_c <- dDummyDistribution(outcome,mu = something(outcome),sigma=something2(outcome),log = TRUE) # log_likelihood (log(density())
+  quant_c <- quantile(log_like_c,probs = tau)
+  bl <- max(exp(-quant_c)-1,0.000001)       # lower boundary to secure an adequate value of C
+  c_tau <- max(log(bl),0.25,na.rm = F) # lower boundary to secure an adequate value of C
+  return(c_tau)
+}
+
+############################################################################################################
+############################################################################################################
+
+# robust DummyDistribution Parameter Mu
+robust_DummyDistributionMu <- function (mu = NULL, sigma = NULL, stabilization,rob=rob) 
+{
+  loss <- function(sigma, y, f) {# y stands for the outcome and must not change the parametrisation or its name, 
+    # f is the additive predictor, for a Gamma distribution the link-function has to be applied mu = exp(f), but the equation is depending on f and sigma, so sigma is not to translate in its additive predictor
+    cal1 <- neg_log_like_dummy_distribution(sigma,y,f) # here is usually the NEGATIVE log-likelihood of the original Dummy distribution (= original "loss"), therefore use the minus sign twice in the next row
+    return(-rho(z=-cal1,rob=rob)) # apply rho as the log-logistic function
+  }
+  risk <- function(y, f, w = 1) {
+    sum(w * loss(y = y, f = f, sigma = sigma)) # stays the same
+  }
+  ngradient <- function(y, f, w = 1) {
+    n_cal1 <- neg_log_like_dummy_distribution(sigma,y,f) # same as for the loss
+    ngr <- rho_ab(z=-n_cal1,rob=rob) * inner_partial_derivative(sigma,y,f) # chain rule for derivation, inner_partial_derivative(sigma,y,f) = d/df[ncal_1(sigma,y,f)] = ngradient of non-robust version of DummyDistribution
+    ngr <- stabilize_ngradient(ngr, w = w, stabilization)
+    return(ngr)
+  }
+  offset <- function(y, w) {
+    if (!is.null(mu)) {
+      RET <- log(mu)
+    }
+    else {
+      RET <- reasonable_offset_Mu(outcome) # set a reasonable offset for the Mu parameter on the Mu level (not on the additive predictor level)
+    }
+    return(RET)
+  }
+  check_y <- function(y) {
+    if (!is.numeric(y) || !is.null(dim(y))) 
+      stop("response is not a numeric vector but ", 
+           sQuote("DummyLSS()"))
+    if (any(y < 0)) 
+      stop("response is not positive but ", sQuote("DummyLSS()"))
+    y
+  }
+  rho_ab <- function(z, rob=rob){   # definition of the log-logistic function and its derivative
+    exp(rob+z)/(exp(rob+z)+1)}
+  rho <- function(z, rob=rob){      # definition of the log-logistic function and its derivative
+    log((1+exp(z+rob))/(1+exp(rob)))}
+  
+  mboost::Family(ngradient = ngradient, risk = risk, loss = loss, response = function(f) exp(f), 
+                 offset = offset, check_y = check_y, name = "robust Dummy distribution: mu(log link)") # name it ;)
+}
+
+############################################################################################################
+
+# robust DummyDistribution Parameter Sigma
+robust_DummyDistributionSigma <- function (mu = NULL, sigma = NULL, stabilization,rob=rob) 
+{
+  loss <- function(mu, y, f) {# y stands for the outcome and must not change the parametrisation or its name, 
+    # f is the additive predictor, for a Gamma distribution the link-function has to be applied sigma = exp(f), but the equation is depending on f and mu, so mu is not to translate in its additive predictor
+    cal2 <-  neg_log_like_dummy_distribution(mu,y,f) # here is usually the NEGATIVE log-likelihood of the original Dummy distribution (= original "loss"), therefore use the minus sign twice in the next row
+    return(-rho(z=-cal2,rob=rob)) # apply rho as the log-logistic function
+  }
+  risk <- function(y, f, w = 1) {
+    sum(w * loss(y = y, f = f, mu = mu)) # stays the same
+  }
+  ngradient <- function(y, f, w = 1) {
+    n_cal2 <- neg_log_like_dummy_distribution(mu,y,f)  # same as for the loss
+    ngr <-   rho_ab(z=-n_cal2,rob=rob) * inner_partial_derivative(mu,y,f) # chain rule for derivation, inner_partial_derivative(sigma,y,f) =d/df[ncal_1(sigma,y,f)]
+    ngr <- stabilize_ngradient(ngr, w = w, stabilization)
+    return(ngr)
+  }
+  offset <- function(y, w) {
+    if (!is.null(sigma)) {
+      RET <- log(sigma)
+    }
+    else {
+      RET <- reasonable_offset_Sigma(outcome) # set a reasonable offset for the Sigma parameter on the Sigma level (not on the additive predictor level)
+    }
+    return(RET)
+  }
+  check_y <- function(y) {
+    if (!is.numeric(y) || !is.null(dim(y))) 
+      stop("response is not a numeric vector but ", 
+           sQuote("DummyLSS()"))
+    if (any(y < 0)) 
+      stop("response is not positive but ", sQuote("DummyLSS()"))
+    y
+  }
+  rho_ab <- function(z, rob=rob){ # definition of the log-logistic function and its derivative
+    exp(rob+z)/(exp(rob+z)+1)}
+  rho <- function(z, rob=rob){ # definition of the log-logistic function and its derivative
+    log((1+exp(z+rob))/(1+exp(rob)))}
+  
+  mboost::Family(ngradient = ngradient, risk = risk, loss = loss, response = function(f) exp(f), 
+                 offset = offset, check_y = check_y, name = "robust Dummy distribution: sigma(log link)") # name it ;)
+}
+
+############################################################################################################
+
+robust_DummyDistribution <- function (mu = NULL, sigma = NULL, stabilization = c("none","MAD", "L2"),rob=2) 
+{
+  if ((!is.null(sigma) && sigma <= 0)) 
+    stop(sQuote("sigma"), " must be greater than zero")
+  if ((!is.null(mu) && mu <= 0)) 
+    stop(sQuote("mu"), " must be greater than zero")
+  stabilization <- check_stabilization(stabilization)
+  Families(mu = robust_DummyDistributionMu(mu = mu, sigma = sigma, stabilization = stabilization,rob=rob), 
+           sigma = robust_DummyDistributionSigma (mu = mu, sigma = sigma, stabilization = stabilization,rob=rob), 
+           qfun = qDummyDistribution, # qDummyDistribution, usually also given from the original non-robust gamboostLSS Families-object, quantile function of the given distribution, see below
+           name = "robust DummyDistribution") # name it ;)
+}
+
+
+############################################################################################################
+############################################################################################################
+
+# existists already for many distributions, some kind of quantile function:
+qDummyDistribution <- function(p, mu = 0, sigma = 1, lower.tail = TRUE, log.p = FALSE) {
+  quantilefunction_of_DummyDistribution} 
+
+############################################################################################################
+############################################################################################################
