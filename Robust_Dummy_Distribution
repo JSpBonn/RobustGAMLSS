@@ -30,7 +30,7 @@ c_generate_DummyDistribution <- function(outcome , tau = 0.05 ){
 robust_DummyDistributionMu <- function (mu = NULL, sigma = NULL, stabilization,rob=rob) 
 {
   loss <- function(sigma, y, f) {# y stands for the outcome and must not change the parametrisation or its name, 
-    # f is the additive predictor, for a Gamma distribution the link-function has to be applied mu = exp(f), but the equation is depending on f and sigma, so sigma is not to translate in its additive predictor
+    # f is the additive predictor, for a Gamma distribution the link-function has to be applied mu = exp(f), but the equation is depending on f and sigma, so sigma must not be translated in its additive predictor
     cal1 <- neg_log_like_dummy_distribution(sigma,y,f) # here is usually the NEGATIVE log-likelihood of the original Dummy distribution (= original "loss"), therefore use the minus sign twice in the next row
     return(-rho(z=-cal1,rob=rob)) # apply rho as the log-logistic function
   }
@@ -75,7 +75,7 @@ robust_DummyDistributionMu <- function (mu = NULL, sigma = NULL, stabilization,r
 robust_DummyDistributionSigma <- function (mu = NULL, sigma = NULL, stabilization,rob=rob) 
 {
   loss <- function(mu, y, f) {# y stands for the outcome and must not change the parametrisation or its name, 
-    # f is the additive predictor, for a Gamma distribution the link-function has to be applied sigma = exp(f), but the equation is depending on f and mu, so mu is not to translate in its additive predictor
+    # f is the additive predictor, for a Gamma distribution the link-function has to be applied sigma = exp(f), but the equation is depending on f and mu, so mu must not be translated in its additive predictor
     cal2 <-  neg_log_like_dummy_distribution(mu,y,f) # here is usually the NEGATIVE log-likelihood of the original Dummy distribution (= original "loss"), therefore use the minus sign twice in the next row
     return(-rho(z=-cal2,rob=rob)) # apply rho as the log-logistic function
   }
