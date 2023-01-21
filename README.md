@@ -2,7 +2,7 @@
 
 In this Github repository you can find implementations of different robust gamboostLSS Families-objects, which are more robust than the original ones for fitting GAMLSS with gradient boosting.
 
-Using the R add-on package "mboost" and "gamboostLSS", you can specify different distributions via "families = robust_NEWFAMILY(rob=c)" inside of the "gamboostLSS" and "glmboostLSS" function. For the robust families itself, there is the additional argument "rob", where the user can specify the robustness constant "c". Higher values of "c" are less robust than smaller values of "c". We recommend to chose the robustness constant in depenence of the data and chosen modelling distribution (this is explained in more detail in the article "Robust Gradient Boosting for Generalized Additive Models for Location, Scale and Shape" from Speller et al.).
+Using the R add-on package "mboost" and "gamboostLSS", you can specify different distributions via "families = robust_NEWFAMILY(rob=c)" inside of the "gamboostLSS" and "glmboostLSS" function. For the robust families itself, there is the additional argument "rob", where the user can specify the robustness constant "c". Higher values of "c" are less robust than smaller values of "c". We recommend to chose the robustness constant in depenence of the data and modelled distribution (this is explained in more detail in the article "Robust Gradient Boosting for Generalized Additive Models for Location, Scale and Shape" from Speller et al.).
 
 Example for GAMLSS regression via gradient boosting:
 model <- gamboostLSS(y ~ x1 + x2, data= data.frame(y,x1,x2), families = robust_GaussianLSS(rob=c))
