@@ -1,0 +1,426 @@
+rm(list=ls())
+
+
+
+
+#setwd("//folderapplication")
+source(Robust_gamboostLSS_Families.R) # loading some packages and the robust Gamma families object for GAMLSS gradient boosting
+#setwd("//foldersimulations")
+library(mvtnorm)
+# library(parallel) # for cluster
+# library("GJRM") # for Aeberhard et al.
+
+
+Simfunc <- function(id){
+  corrupted2 <- c(0.0,0.025,0.05,0.075,0.1,0.15,0.2)
+  out.tab <-  vector("list",length(corrupted2))
+  half=1000
+  n=half
+  methodnumber = 6
+  numbercorrupted <- ceiling(n*corrupted2) # number of corrupted observations
+  sigma_ver <- 4 
+  cor_strong <-  4
+ 
+   
+  # Data generating
+  p=5  # XXX comment for high dimensional
+  # p=1000 # XXX uncomment for high dimensional
+  
+  correl <-0.50 # correlation Toeplitz
+  intercept = c(1,0.5) # Simulations setting intercept
+  help = numeric(p)
+  for (k in 1:p){ help[k]=correl^(k-1)
+  }
+  toeplitzcor = stats::toeplitz(help)
+  sigma=1
+  
+  mean_X = rep(intercept[1],length = p)
+  sigma_X = matrix(toeplitzcor,p,p)
+  
+  diag(sigma_X)=sigma
+  
+  for (i in 1:length(corrupted2)) {
+    time_matrix <- matrix(0,ncol = methodnumber,nrow = 1)    
+      ws <- c(rep(1,half), rep(0,half))
+    i=i
+    n <- length(ws)
+    set.seed(id+10000)
+    
+    X = rmvnorm(n,mean = mean_X, sigma = sigma_X) # XXX comment for high dimensional
+    x1 <- X[,1]  # XXX comment for high dimensional
+    x2 <- X[,2]  # XXX comment for high dimensional
+    x3 <- X[,3]  # XXX comment for high dimensional
+    x4 <- X[,4]  # XXX comment for high dimensional
+    x5 <- X[,5]  # XXX comment for high dimensional
+    
+    
+    # X = rmvnorm(n,mean = mean_X, sigma = sigma_X) # XXX uncomment for high dimensional
+    # colnames(X) <- paste0("x",1:p) # XXX uncomment for high dimensional
+    
+    stopping=2000 # XXX comment for high dimensional
+    # stopping=1000 # XXX uncomment for high dimensional
+     
+     
+      
+   
+     
+      
+      
+    toydata <- data.frame(x1 = x1, x2 = x2, x3 = x3,x4=x4,x5=x5) # XXX comment for high dimensional
+   # toydata <- data.frame(X) # XXX uncomment for high dimensional
+    toydata$y <- rnorm(n, mean = 1 + 2 * x1 - x2, sd = exp(0.5 - 0.25 * x1 + 0.5 * x3))
+    toydata2 <- toydata[1:half,]
+    
+    
+    a <- sd(toydata$y[1:half])
+    set.seed(id+10000*i+100000)
+    if (i>1) { #corruption
+      toydata$y[1:numbercorrupted[i]] <- toydata$y[1:numbercorrupted[i]]+cor_strong*a*(-1)^rbinom(numbercorrupted[i], size=1, prob=0.5)# YYY symmetric corruption, uncomment for skewed corruption, choose only one type of corruption
+      toydata$y[(half+1):(half+numbercorrupted[i])] <- toydata$y[(half+1):(half+numbercorrupted[i])]+cor_strong*a*(-1)^rbinom(numbercorrupted[i], size=1, prob=0.5)# YYY symmetric corruption, uncomment for skewed corruption, choose only one type of corruption
+      
+      #toydata$y[1:numbercorrupted[i]] <- toydata$y[1:numbercorrupted[i]]+cor_strong*a # comment for skewed corruption, choose only one type of corruption
+      #toydata$y[(half+1):(half+numbercorrupted[i])] <- toydata$y[(half+1):(half+numbercorrupted[i])]+cor_strong*a # comment for skewed corruption, choose only one type of corruption
+      }
+    
+    
+    
+    
+    
+    
+    
+    
+    n_test=1000
+    set.seed(id+20000)
+    
+    X = rmvnorm(n_test,mean = mean_X, sigma = sigma_X) # XXX comment for high dimensional
+    x1 <- X[,1] # XXX comment for high dimensional
+    x2 <- X[,2] # XXX comment for high dimensional
+    x3 <- X[,3] # XXX comment for high dimensional
+    x4 <- X[,4] # XXX comment for high dimensional
+    x5 <- X[,5] # XXX comment for high dimensional
+    
+
+    # X = rmvnorm(n_test,mean = mean_X, sigma = sigma_X) # XXX uncomment for high dimensional
+    # colnames(X) <- paste0("x",1:p) # XXX uncomment for high dimensional
+    
+    
+    
+    toydata_test <- data.frame(x1 = x1, x2 = x2, x3 = x3 , x4=x4 , x5=x5) # XXX comment for high dimensional
+    toydata_test <-data.frame(X) # XXX uncomment for high dimensional
+    toydata_test$y <- rnorm(n_test, mean = 1 + 2 * x1 - x2, sd = exp(0.5 - 0.25 * x1 + 0.5 * x3))
+
+    # generate the robustness constants for the robust method
+    tuning_s <- c(1,2,10, c_generate_Gaussian(toydata$y[1:half],tau=0.01), c_generate_Gaussian(toydata$y[1:half],tau=0.05), c_generate_Gaussian(toydata$y[1:half],tau=0.10))
+    #  tuning_s[1] is only placeholder for the non-robust method
+    
+    #coefmatrix_all <- matrix(0,nrow=methodnumber,ncol=2*p+2)
+    coefmatrix_optimal <- matrix(0,nrow=methodnumber,ncol=2*p+2)
+    cvr <- matrix(0,ncol=methodnumber,nrow=3)
+    #MAE_MSE_all <- matrix(0,ncol=methodnumber,nrow=4)
+    #MAE_MSE_optimal<- matrix(0,ncol=methodnumber,nrow=4)
+    
+    #MAE_MSE_all_test <- matrix(0,ncol=methodnumber,nrow=4)
+    #MAE_MSE_optimal_test<- matrix(0,ncol=methodnumber,nrow=4)
+    
+    # log_likelihood_conv_test <-  matrix(0,ncol=methodnumber,nrow=1)
+    
+    log_likelihood_opti_test <-  matrix(0,ncol=methodnumber,nrow=1)
+    
+    ##################################################### ##################################################### ##################################################### #####################################################
+    ##################################################### ##################################################### ##################################################### #####################################################
+    ##################################################### ##################################################### ##################################################### #####################################################
+    
+    method=1
+    set.seed(1234+id)
+    time_a <-proc.time()[3]  
+    gam1 <-glmboostLSS(y~.,data=toydata,method = "noncyclic",control = boost_control(mstop=stopping,risk = "oobag"),families = GaussianLSS(stabilization = "MAD"),weights = ws)
+    cvr[1,method]  <- as.integer(which.min(risk(gam1,merge=T))-2)
+    time_b <- proc.time()[3]                                                                                                           
+    time_matrix[1,method] <- time_b-time_a  
+    
+    # #### converged coefficients 
+    #if (min(mstop(gam1[stopping],parameter = "mu"),mstop(gam1[stopping],parameter = "sigma"))>0) {
+    #  coefmatrix_all[method,] <- c(coef(gam1[stopping]$mu,off2int = T,which=""),coef(gam1[stopping]$sigma,off2int = T,which=""))
+    #}
+    #if (min(mstop(gam1[stopping],parameter = "mu"),mstop(gam1[stopping],parameter = "sigma"))==0) {
+    #  coefmatrix_all[method,] <- c(coef(gam1[stopping]$mu,off2int = T,which=""),gam1[stopping]$sigma$offset,rep(0,p))
+    #}
+    # mat_all <- as.matrix(cbind(matrix(1,ncol = 1,nrow=half),toydata[1:half,1:p]))
+    # mu_est <- as.matrix(coef(gam1[stopping]$mu,off2int = TRUE,which=""))
+    #  if (min(mstop(gam1[stopping],parameter = "mu"),mstop(gam1[stopping],parameter = "sigma"))>0) {
+    #   sigma_est <- as.matrix(coef(gam1[stopping],off2int = TRUE,which="")$sigma)
+    # }
+    #  if (min(mstop(gam1[stopping],parameter = "mu"),mstop(gam1[stopping],parameter = "sigma"))==0) {
+    #    sigma_est <- as.matrix(c(gam1[stopping]$sigma$offset,rep(0,p)))
+    # }
+    # mu_resi <- mat_all%*%mu_est
+    # sigma_resi <-  mat_all%*%sigma_est
+    #
+    #  true_mu <- 1 + 2 * toydata2$x1 - toydata2$x2
+    #
+    #  MAE_MSE_all[1,method]<- sum(abs(mu_resi-true_mu))
+    #  MAE_MSE_all[2,method]<- sum((mu_resi-true_mu)^2)
+    #
+    #  true_sigma <- 0.5 - 0.25 *toydata2$x1 + 0.5 * toydata2$x3
+    #
+    #  MAE_MSE_all[3,method]<- sum(abs(sigma_resi-true_sigma))
+    # MAE_MSE_all[4,method]<- sum((sigma_resi-true_sigma)^2)
+    #
+    #  mat_all <- as.matrix(cbind(matrix(1,ncol = 1,nrow=half),toydata_test[,1:5]))
+    #  mu_resi <- mat_all%*%mu_est
+    #  sigma_resi <-  mat_all%*%sigma_est
+    #
+    #  true_mu <- 1 + 2 * toydata_test$x1 - toydata_test$x2
+    #  
+    #  MAE_MSE_all_test[1,method]<- sum(abs(mu_resi-true_mu))
+    #  MAE_MSE_all_test[2,method]<- sum((mu_resi-true_mu)^2)
+    #  
+    #  true_sigma <- 0.5 - 0.25 *toydata_test$x1 + 0.5 * toydata_test$x3
+    #  
+    #  MAE_MSE_all_test[3,method]<- sum(abs(sigma_resi-true_sigma))
+    #  MAE_MSE_all_test[4,method]<- sum((sigma_resi-true_sigma)^2)
+    #  
+    #  log_likelihood_conv_test[method] <- -sum(dnorm(x = toydata_test$y, mean = mu_resi, sd = exp(sigma_resi), log = TRUE))
+    #  rm(list=c("mat_all","mu_resi","sigma_resi"))
+    
+    
+    if (min(mstop(gam1[cvr[1,method]],parameter = "mu"),mstop(gam1[cvr[1,method]],parameter = "sigma"))>0) {
+      coefmatrix_optimal[method,] <- c(coef(gam1[cvr[1,method]]$mu,off2int = T,which=""),coef(gam1[cvr[1,method]]$sigma,off2int = T,which=""))
+    }
+    if (min(mstop(gam1[cvr[1,method]],parameter = "mu"),mstop(gam1[cvr[1,method]],parameter = "sigma"))==0) {
+      coefmatrix_optimal[method,] <- c(coef(gam1[cvr[1,method]]$mu,off2int = T,which=""),gam1[cvr[1,method]]$sigma$offset,rep(0,p))
+    }
+    
+    mat_all <- as.matrix(cbind(matrix(1,ncol = 1,nrow=half),toydata[1:half,1:p]))
+    mu_est <- as.matrix(coef(gam1[cvr[1,method]]$mu,off2int = TRUE,which=""))
+    
+    
+    if (min(mstop(gam1[cvr[1,method]],parameter = "mu"),mstop(gam1[cvr[1,method]],parameter = "sigma"))>0) {
+      sigma_est <- as.matrix(coef(gam1[cvr[1,method]]$sigma,off2int = TRUE,which=""))
+    }
+    if (min(mstop(gam1[cvr[1,method]],parameter = "mu"),mstop(gam1[cvr[1,method]],parameter = "sigma"))==0) {
+      sigma_est <- as.matrix(c(gam1[cvr[1,method]]$sigma$offset,rep(0,p)))
+    }
+    
+  
+    mat_all <- as.matrix(cbind(matrix(1,ncol = 1,nrow=half),toydata_test[,1:p]))
+    mu_resi <- mat_all%*%mu_est
+    sigma_resi <-  mat_all%*%sigma_est
+    
+    log_likelihood_opti_test[method] <- -sum(dnorm(x = toydata_test$y, mean = mu_resi, sd = exp(sigma_resi), log = TRUE))
+    rm(list=c("mat_all","mu_resi","sigma_resi"))
+    
+    cvr[2,method]<- mstop(gam1[cvr[1,method]]$mu)
+    cvr[3,method]<- mstop(gam1[cvr[1,method]]$sigma)
+    
+    rm("gam1")
+    
+    ##################################################### ##################################################### ##################################################### #####################################################
+    ##################################################### ##################################################### ##################################################### #####################################################
+    ##################################################### ##################################################### ##################################################### #####################################################
+    
+    for (z in 2:6) { # start of loop over robust methods
+      
+    method = z
+    c_0=tuning_s[method]
+    
+    set.seed(1234+id) # non robust GaussianLSS
+    time_a <-proc.time()[3]  
+    gam1 <-glmboostLSS(y~.,data=toydata,method = "noncyclic",control = boost_control(mstop=stopping,risk = "oobag"),weights = ws,families = robust_GaussianLSS(stabilization = "MAD",rob=c_0)) 
+    cvr[1,method]  <- as.integer(which.min(risk(gam1,merge=T))-2)
+    time_b <- proc.time()[3]                                                                                                           
+    time_matrix[1,method] <- time_b-time_a  
+    # 
+    #   if (min(mstop(gam1[stopping],parameter = "mu"),mstop(gam1[stopping],parameter = "sigma"))>0) {
+    #   coefmatrix_all[method,] <- c(coef(gam1[stopping]$mu,off2int = T,which=""),coef(gam1[stopping]$sigma,off2int = T,which=""))
+    # }
+    # if (min(mstop(gam1[stopping],parameter = "mu"),mstop(gam1[stopping],parameter = "sigma"))==0) {
+    #   coefmatrix_all[method,] <- c(coef(gam1[stopping]$mu,off2int = T,which=""),gam1[stopping]$sigma$offset,rep(0,p))
+    # }
+    # 
+    # 
+    # mat_all <- as.matrix(cbind(matrix(1,ncol = 1,nrow=half),toydata[1:half,1:p]))
+    # mu_est <- as.matrix(coef(gam1[stopping]$mu,off2int = TRUE,which=""))
+    # if (min(mstop(gam1[stopping],parameter = "mu"),mstop(gam1[stopping],parameter = "sigma"))>0) {
+    #   sigma_est <- as.matrix(coef(gam1[stopping],off2int = TRUE,which="")$sigma)
+    # }
+    # if (min(mstop(gam1[stopping],parameter = "mu"),mstop(gam1[stopping],parameter = "sigma"))==0) {
+    #   sigma_est <- as.matrix(c(gam1[stopping]$sigma$offset,rep(0,p)))
+    # }
+    # mu_resi <- mat_all%*%mu_est
+    # sigma_resi <-  mat_all%*%sigma_est
+    # 
+    # true_mu <- 1 + 2 * toydata2$x1 - toydata2$x2
+    # 
+    # MAE_MSE_all[1,method]<- sum(abs(mu_resi-true_mu))
+    # MAE_MSE_all[2,method]<- sum((mu_resi-true_mu)^2)
+    # 
+    # true_sigma <- 0.5 - 0.25 *toydata2$x1 + 0.5 * toydata2$x3
+    # 
+    # MAE_MSE_all[3,method]<- sum(abs(sigma_resi-true_sigma))
+    # MAE_MSE_all[4,method]<- sum((sigma_resi-true_sigma)^2)
+    # 
+    # 
+    # mat_all <- as.matrix(cbind(matrix(1,ncol = 1,nrow=half),toydata_test[,1:5]))
+    # mu_resi <- mat_all%*%mu_est
+    # sigma_resi <-  mat_all%*%sigma_est
+    # 
+    # true_mu <- 1 + 2 * toydata_test$x1 - toydata_test$x2
+    # 
+    # MAE_MSE_all_test[1,method]<- sum(abs(mu_resi-true_mu))
+    # MAE_MSE_all_test[2,method]<- sum((mu_resi-true_mu)^2)
+    # 
+    # true_sigma <- 0.5 - 0.25 *toydata_test$x1 + 0.5 * toydata_test$x3
+    # 
+    # MAE_MSE_all_test[3,method]<- sum(abs(sigma_resi-true_sigma))
+    # MAE_MSE_all_test[4,method]<- sum((sigma_resi-true_sigma)^2)
+    # 
+    # log_likelihood_conv_test[method] <- -sum(dnorm(x = toydata_test$y, mean = mu_resi, sd = exp(sigma_resi), log = TRUE))
+    # rm(list=c("mat_all","mu_resi","sigma_resi"))
+    # 
+
+
+    if (min(mstop(gam1[cvr[1,method]],parameter = "mu"),mstop(gam1[cvr[1,method]],parameter = "sigma"))>0) {
+      coefmatrix_optimal[method,] <- c(coef(gam1[cvr[1,method]]$mu,off2int = T,which=""),coef(gam1[cvr[1,method]]$sigma,off2int = T,which=""))
+    }
+    if (min(mstop(gam1[cvr[1,method]],parameter = "mu"),mstop(gam1[cvr[1,method]],parameter = "sigma"))==0) {
+      coefmatrix_optimal[method,] <- c(coef(gam1[cvr[1,method]]$mu,off2int = T,which=""),gam1[cvr[1,method]]$sigma$offset,rep(0,p))
+    }
+    
+    mat_all <- as.matrix(cbind(matrix(1,ncol = 1,nrow=half),toydata[1:half,1:p]))
+    mu_est <- as.matrix(coef(gam1[cvr[1,method]]$mu,off2int = TRUE,which=""))
+    
+    if (min(mstop(gam1[cvr[1,method]],parameter = "mu"),mstop(gam1[cvr[1,method]],parameter = "sigma"))>0) {
+      sigma_est <- as.matrix(coef(gam1[cvr[1,method]]$sigma,off2int = TRUE,which=""))
+    }
+    if (min(mstop(gam1[cvr[1,method]],parameter = "mu"),mstop(gam1[cvr[1,method]],parameter = "sigma"))==0) {
+      sigma_est <- as.matrix(gam1[cvr[1,method]]$sigma$offset,rep(0,p))
+    }
+ 
+    mat_all <- as.matrix(cbind(matrix(1,ncol = 1,nrow=half),toydata_test[,1:p]))
+    mu_resi <- mat_all%*%mu_est
+    sigma_resi <-  mat_all%*%sigma_est
+    
+    log_likelihood_opti_test[method] <- -sum(dnorm(x = toydata_test$y, mean = mu_resi, sd = exp(sigma_resi), log = TRUE))
+    rm(list=c("mat_all","mu_resi","sigma_resi"))
+    
+    cvr[2,method]<- mstop(gam1[cvr[1,method]]$mu)
+    cvr[3,method]<- mstop(gam1[cvr[1,method]]$sigma)
+    
+    rm("gam1")
+    
+    } # end of loop over robust methods
+    
+    ##################################################### ##################################################### ##################################################### #####################################################
+    ##################################################### ##################################################### ##################################################### #####################################################
+    
+    # following interesting as comparison
+    ##################################################### ##################################################### ##################################################### #####################################################
+    # 
+    # # only for low dimensinoal cases (and comparably small amounts of parameters p)
+    # # Aeberhard et al., 2021 robust method for GAMLSS
+    # # library("GJRM") # for Aeberhard et al.  
+    #
+    # coefmatrix_all <- matrix(0,nrow=methodenanzahl,ncol=2*p+2)
+    # coefmatrix_optimal <- matrix(0,nrow=methodenanzahl,ncol=2*p+2)
+    # MAE_MSE_all <- matrix(0,ncol=methodenanzahl,nrow=4)
+    # MAE_MSE_all_test <- matrix(0,ncol=methodenanzahl,nrow=4)
+    # 
+    # log_likelihood_conv_test <-  matrix(0,ncol=methodenanzahl,nrow=1)
+    # time_matrix <- matrix(0,ncol = methodenanzahl,nrow = 1)       
+    # 
+    # for (z in 2:6) {
+    #   method = z
+    #   set.seed(1234+id)
+    #   
+    #   time_a <-proc.time()[3]
+    #   eq.mu <- as.formula(paste("y~",paste(colnames(toydata[,1:p]),collapse = "+"),sep=""))
+    #   eq.s2 <- as.formula(paste("~",paste(colnames(toydata[,1:p]),collapse = "+"),sep=""))
+    #   
+    #   fl    <- list(eq.mu, eq.s2)
+    #   
+    #   out1 <- gamlss(fl, data = toydata[1:half,] , margin = "N", robust = FALSE)
+    #   
+    #   rc=tuning_s[method]
+    #   bounds <- rob.int(out1, rc, l.grid=1000, tol=1e-4, var.range = c(-1000,1000)) # sometimes tuning is necessary here
+    #   #bounds
+    #   lB <- bounds["lB"]
+    #   uB <- bounds["uB"]
+    #   
+    #   out.rpb <- gamlss(fl, margin="N", data=toydata[1:half,], robust=TRUE, sp.method="efs", rc=rc, lB=lB, uB=uB)
+    #   time_b <- proc.time()[3]
+    #   time_matrix[1,method] <- time_b-time_a
+    #   
+    #   coefmatrix_all[method,]<- out.rpb$coefficients
+    #   
+    #   
+    #  # mat_all <- as.matrix(cbind(matrix(1,ncol = 1,nrow=half),toydata[1:half,1:5]))
+    #   mu_est <- as.matrix(out.rpb$coefficients[1:(p+1)])
+    #   sigma_est <- as.matrix(out.rpb$coefficients[(p+2):(2*p+2)])
+    #  #  mu_resi <- mat_all%*%mu_est
+    #  # sigma_resi <-  mat_all%*%sigma_est
+    #   
+    #   true_mu <- 1 + 2 * toydata2$x1 - toydata2$x2
+    #   
+    #   #MAE_MSE_all[1,method]<- sum(abs(mu_resi-true_mu))
+    #   #MAE_MSE_all[2,method]<- sum((mu_resi-true_mu)^2)
+    #   
+    #   true_sigma <- 0.5 - 0.25 *toydata2$x1 + 0.5 * toydata2$x3
+    #   
+    #   #MAE_MSE_all[3,method]<- sum(abs(sigma_resi-true_sigma))
+    #   #MAE_MSE_all[4,method]<- sum((sigma_resi-true_sigma)^2)
+    #   
+    #   mat_all <- as.matrix(cbind(matrix(1,ncol = 1,nrow=half),toydata_test[,1:5]))
+    #   mu_resi <- mat_all%*%mu_est
+    #   sigma_resi <-  mat_all%*%sigma_est
+    #   
+    #   true_mu <- 1 + 2 * toydata_test$x1 - toydata_test$x2
+    #   
+    #  # MAE_MSE_all_test[1,method]<- sum(abs(mu_resi-true_mu))
+    #  # MAE_MSE_all_test[2,method]<- sum((mu_resi-true_mu)^2)
+    #   
+    #   true_sigma <- 0.5 - 0.25 *toydata_test$x1 + 0.5 * toydata_test$x3
+    #   
+    #  # MAE_MSE_all_test[3,method]<- sum(abs(sigma_resi-true_sigma))
+    #  # MAE_MSE_all_test[4,method]<- sum((sigma_resi-true_sigma)^2)
+    #   
+    #   log_likelihood_conv_test[method] <- -sum(dnorm(x = toydata_test$y, mean = mu_resi, sd = exp(sigma_resi), log = TRUE))
+    #   rm(list=c("mat_all","mu_resi","sigma_resi"))
+    #   
+    #   rm(list=c("out.rpb","out1"))
+    # }
+    # out.tab[[i]] <- list(log_likelihood_conv_test=log_likelihood_conv_test,MAE_MSE_all_test=MAE_MSE_all_test,MAE_MSE_all=MAE_MSE_all, coefmatrix_all=coefmatrix_all, tuning_s=tuning_s,time_matrix=time_matrix)
+    
+   
+  
+    
+    out.tab[[i]] <- list(
+      log_likelihood_opti_test=log_likelihood_opti_test,
+      #log_likelihood_conv_test=log_likelihood_conv_test,
+      #MAE_MSE_all_test=MAE_MSE_all_test,MAE_MSE_all=MAE_MSE_all,
+      coefmatrix_optimal=coefmatrix_optimal,
+      #coefmatrix_all=coefmatrix_all, 
+      cvr=cvr,tuning_s=tuning_s,time_matrix=time_matrix)
+    
+    print(i)
+    
+  }
+ 
+  n_obser=1000
+  save(out.tab=out.tab,file = file.path(paste("//home/foldersimulations/.../5to1000",id,"simulationsERG_par", p,"observ",n_obser, "sim.RData",sep="_"))) # XXX comment for high dimensional
+  # save(out.tab=out.tab,file = file.path(paste("//home/foldersimulations/.../1000to1000",id,"simulationsERG_par", p,"observ",n_obser, "sim.RData",sep="_"))) # XXX uncomment for high dimensional
+  return(out.tab) 
+  
+  print(id)
+}
+
+
+
+
+id <-1:100 # run id
+
+ERG <- mclapply(id,FUN=Simfunc,mc.cores =10,mc.set.seed = TRUE,  mc.preschedule = FALSE) # cluster
+
+
+save(ERG,file=paste("simulationsResults", "runs",max(id), "sim_toep.RData",sep="_"))
+
