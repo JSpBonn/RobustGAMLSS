@@ -54,26 +54,26 @@ library(lattice)
 # non robust
 data_example <-  data.frame(brain[,1:2],pred_mu)
 
-levelplot(pred_mu ~ Y * X, data_example,main="Eta_theta_mu non robust",xlab=expression(paste("Voxel horizontal axis (x"[2],")",sub="")) ,ylab=expression(paste("Voxel horizontal axis (x"[1],")",sub="")),
+levelplot(pred_mu ~ Y * X, data_example,main="Eta_mu non robust",xlab=expression(paste("Voxel horizontal axis (x"[2],")",sub="")) ,ylab=expression(paste("Voxel horizontal axis (x"[1],")",sub="")),
           panel = panel.levelplot,cuts = 80)
 
 
 data_example2 <-  data.frame(brain[,1:2],pred_sig)
 
-levelplot(pred_sig ~ Y * X, data_example2,main="Eta_theta_sigma non robust",xlab=expression(paste("Voxel horizontal axis (x"[2],")",sub="")) ,ylab=expression(paste("Voxel horizontal axis (x"[1],")",sub="")),
+levelplot(pred_sig ~ Y * X, data_example2,main="Eta_sigma non robust",xlab=expression(paste("Voxel horizontal axis (x"[2],")",sub="")) ,ylab=expression(paste("Voxel horizontal axis (x"[1],")",sub="")),
           panel = panel.levelplot,cuts = 80)
 
 
 # robust
 data_example3 <-  data.frame(brain[,1:2],pred_mu2)
 
-levelplot(pred_mu2 ~ Y * X, data_example3,main="Eta_theta_mu robust",xlab=expression(paste("Voxel horizontal axis (x"[2],")",sub="")) ,ylab=expression(paste("Voxel horizontal axis (x"[1],")",sub="")),
+levelplot(pred_mu2 ~ Y * X, data_example3,main="Eta_mu robust",xlab=expression(paste("Voxel horizontal axis (x"[2],")",sub="")) ,ylab=expression(paste("Voxel horizontal axis (x"[1],")",sub="")),
           panel = panel.levelplot,cuts = 80)
 
 
 data_example4 <-  data.frame(brain[,1:2],pred_sig2)
 
-levelplot(pred_sig2 ~ Y * X, data_example4,main="Eta_theta_sigma robust",xlab=expression(paste("Voxel horizontal axis (x"[2],")",sub="")) ,ylab=expression(paste("Voxel horizontal axis (x"[1],")",sub="")),
+levelplot(pred_sig2 ~ Y * X, data_example4,main="Eta_sigma robust",xlab=expression(paste("Voxel horizontal axis (x"[2],")",sub="")) ,ylab=expression(paste("Voxel horizontal axis (x"[1],")",sub="")),
           panel = panel.levelplot,cuts = 80)
 
 
