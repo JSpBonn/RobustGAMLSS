@@ -22,7 +22,7 @@ set.seed(123)
 
 stopping=1000 #1500
 
-met=1 # non robust Gamma distribution
+met=1 # non robust gamma distribution
 set.seed(100)
 
 gam1 <-glmboostLSS(formula = KRT19_protein~.,data=data_set, method = "noncyclic", control = boost_control(mstop=stopping,nu = 0.01), families = GammaLSS(stabilization = "none"))
@@ -32,7 +32,7 @@ cvr_gam1<- cvrisk(gam1)
 g11_coef <- coef(gam1[mstop(cvr_gam1)],off2int=T)
 
 
-met=2 # robust Gamma distribution with tau=0.05
+met=2 # robust gamma distribution with tau=0.05
 c_value0_05 <- c_generate_Gamma(out$KRT19_protein)
 set.seed(100)
 
@@ -62,7 +62,7 @@ out <- data_set$KRT19_protein[-i]
 
 
 out.tab <-  vector("list",1)
-methoden=2 # robust and normal Gamma distribution for gradient boosting
+methoden=2 # robust and ordinary gamma distribution for gradient boosting
 
 mstopmatrix <- matrix(0,ncol=methoden,nrow =1)
 mstopmatrix <- data.frame(mstopmatrix)
@@ -91,7 +91,7 @@ stopping=1500
 
 #############################################################################################################
 
-met=1 # non robust Gamma distribution
+met=1 # non robust gamma distribution
 
 set.seed(200+i)
 time_a <-proc.time()[3]  
@@ -157,7 +157,7 @@ print(c(i,met))
 
 #############################################################################################################
 
-met=2 # robust Gamma distribution with tau=0.05
+met=2 # robust gamma distribution with tau=0.05
 
 c_value0_05 <- c_generate_Gamma(out$KRT19_protein)
 
