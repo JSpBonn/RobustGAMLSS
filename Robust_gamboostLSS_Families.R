@@ -1,6 +1,8 @@
 library(mboost)
-library("gamboostLSS")
+library(gamboostLSS)
 
+library(gamlss.dist) # needed for qGamma (quantile of Gamma distribution)
+library(EnvStats)    # needed for our offset calculation
 
 ############################################################################################################
 # functions, which are hidden in the Boosting package, but publicly available:
@@ -160,9 +162,6 @@ robust_GaussianLSS <- function (mu = NULL, sigma = NULL, stabilization = c("none
 
 # GAMMA 
 # robust GammaLSS:
-library(gamlss.dist) # needed for qGamma (quantile of Gamma distribution)
-library(EnvStats)    # needed for our offset calculation
-
 
 # determination of data driven robustness constant "c" for quantiles "tau":
 # use only outcome values with weight = 1
