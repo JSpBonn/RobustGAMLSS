@@ -36,7 +36,7 @@ coef(glmLSS_robustGaussian[mstop(cvr_robustGaussian)] , off2int=TRUE , which="")
 
 set.seed(321)
 glmLSS_robustGamma <- glmboostLSS(DEXfat~. , method = "noncyclic" , control = boost_control(mstop=stopping) , families = robust_GaussianLSS(stabilization = "MAD",rob=c_value_Gamma), data = bodyfat)
-cvr_Gamma <- cvrisk(glmLSS_robustGamma) # default method is 25-fold bootstrap
+cvr_robustGamma <- cvrisk(glmLSS_robustGamma) # default method is 25-fold bootstrap
 coef(glmLSS_robustGamma[mstop(cvr_robustGamma)] , off2int=TRUE , which="")  # coefficients of glmLSS_Gamma at optimal stopping iteration for cvrisk
 
 plot(glmLSS_robustGaussian)
