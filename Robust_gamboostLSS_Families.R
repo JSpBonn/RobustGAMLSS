@@ -1,8 +1,8 @@
 library(mboost)
 library(gamboostLSS)
 
-library(gamlss.dist) # needed for qGamma (quantile of Gamma distribution)
-library(EnvStats)    # needed for our offset calculation
+library(gamlss.dist) # needed for qGamma (quantile of gamma distribution)
+library(EnvStats)    # needed for our offset calculation for gamma distribution
 
 ############################################################################################################
 # functions, which are hidden in the Boosting package, but publicly available:
