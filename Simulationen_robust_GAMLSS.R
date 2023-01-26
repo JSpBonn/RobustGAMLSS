@@ -6,9 +6,9 @@ rm(list=ls())
 #setwd("//folderapplication")
 source(Robust_gamboostLSS_Families.R) # loading some packages and the robust Gamma families object for GAMLSS gradient boosting
 #setwd("//foldersimulations")
-library(mvtnorm)
+library(mvtnorm) # for generating the design matrix within the simulations
 # library(parallel) # for cluster
-# library("GJRM") # for Aeberhard et al.
+library("GJRM") # for Aeberhard et al.
 
 
 Simfunc <- function(id){
@@ -39,14 +39,16 @@ Simfunc <- function(id){
   
   diag(sigma_X)=sigma
   
-  for (i in 1:length(corrupted2)) {
+  for (i in 1:length(corrupted2)) { # comment when running only an example (start loop of i)
     time_matrix <- matrix(0,ncol = methodnumber,nrow = 1)    
       ws <- c(rep(1,half), rep(0,half))
-    i=i
-    n <- length(ws)
-    set.seed(id+10000)
+    i=i # when running an example, use i=1 for uncorrupted data and in general an index of the vector c(0.0,0.025,0.05,0.075,0.1,0.15,0.2) (amount of corruption)
+    # id=1 # uncomment when running only an example (only for set.seed)
     
-    X = rmvnorm(n,mean = mean_X, sigma = sigma_X) # XXX comment for high dimensional
+    n <- length(ws)
+    
+    set.seed(id+10000)
+    X = rmvnorm(n,mean = mean_X, sigma = sigma_X) # XXX comment for high-dimensional
     x1 <- X[,1]  # XXX comment for high dimensional
     x2 <- X[,2]  # XXX comment for high dimensional
     x3 <- X[,3]  # XXX comment for high dimensional
@@ -54,11 +56,11 @@ Simfunc <- function(id){
     x5 <- X[,5]  # XXX comment for high dimensional
     
     
-    # X = rmvnorm(n,mean = mean_X, sigma = sigma_X) # XXX uncomment for high dimensional
-    # colnames(X) <- paste0("x",1:p) # XXX uncomment for high dimensional
+    # X = rmvnorm(n,mean = mean_X, sigma = sigma_X) # XXX uncomment for high-dimensional
+    # colnames(X) <- paste0("x",1:p) # XXX uncomment for high-dimensional
     
-    stopping=2000 # XXX comment for high dimensional
-    # stopping=1000 # XXX uncomment for high dimensional
+    stopping=2000 # XXX comment for high-dimensional
+    # stopping=1000 # XXX uncomment for high-dimensional
      
      
       
@@ -66,8 +68,8 @@ Simfunc <- function(id){
      
       
       
-    toydata <- data.frame(x1 = x1, x2 = x2, x3 = x3,x4=x4,x5=x5) # XXX comment for high dimensional
-   # toydata <- data.frame(X) # XXX uncomment for high dimensional
+    toydata <- data.frame(x1 = x1, x2 = x2, x3 = x3,x4=x4,x5=x5) # XXX comment for high-dimensional
+   # toydata <- data.frame(X) # XXX uncomment for high-dimensional
     toydata$y <- rnorm(n, mean = 1 + 2 * x1 - x2, sd = exp(0.5 - 0.25 * x1 + 0.5 * x3))
     toydata2 <- toydata[1:half,]
     
@@ -81,32 +83,25 @@ Simfunc <- function(id){
       #toydata$y[1:numbercorrupted[i]] <- toydata$y[1:numbercorrupted[i]]+cor_strong*a # comment for skewed corruption, choose only one type of corruption
       #toydata$y[(half+1):(half+numbercorrupted[i])] <- toydata$y[(half+1):(half+numbercorrupted[i])]+cor_strong*a # comment for skewed corruption, choose only one type of corruption
       }
-    
-    
-    
-    
-    
-    
-    
-    
+      
     n_test=1000
     set.seed(id+20000)
     
-    X = rmvnorm(n_test,mean = mean_X, sigma = sigma_X) # XXX comment for high dimensional
-    x1 <- X[,1] # XXX comment for high dimensional
-    x2 <- X[,2] # XXX comment for high dimensional
-    x3 <- X[,3] # XXX comment for high dimensional
-    x4 <- X[,4] # XXX comment for high dimensional
-    x5 <- X[,5] # XXX comment for high dimensional
+    X = rmvnorm(n_test,mean = mean_X, sigma = sigma_X) # XXX comment for high-dimensional
+    x1 <- X[,1] # XXX comment for high-dimensional
+    x2 <- X[,2] # XXX comment for high-dimensional
+    x3 <- X[,3] # XXX comment for high-dimensional
+    x4 <- X[,4] # XXX comment for high-dimensional
+    x5 <- X[,5] # XXX comment for high-dimensional
     
 
-    # X = rmvnorm(n_test,mean = mean_X, sigma = sigma_X) # XXX uncomment for high dimensional
-    # colnames(X) <- paste0("x",1:p) # XXX uncomment for high dimensional
+    # X = rmvnorm(n_test,mean = mean_X, sigma = sigma_X) # XXX uncomment for high-dimensional
+    # colnames(X) <- paste0("x",1:p) # XXX uncomment for high-dimensional
     
     
     
-    toydata_test <- data.frame(x1 = x1, x2 = x2, x3 = x3 , x4=x4 , x5=x5) # XXX comment for high dimensional
-    toydata_test <-data.frame(X) # XXX uncomment for high dimensional
+    toydata_test <- data.frame(x1 = x1, x2 = x2, x3 = x3 , x4=x4 , x5=x5) # XXX comment for high-dimensional
+    toydata_test <-data.frame(X) # XXX uncomment for high-dimensional
     toydata_test$y <- rnorm(n_test, mean = 1 + 2 * x1 - x2, sd = exp(0.5 - 0.25 * x1 + 0.5 * x3))
 
     # generate the robustness constants for the robust method
@@ -404,11 +399,11 @@ Simfunc <- function(id){
     
     print(i)
     
-  }
+  } # comment when running only an example (end loop of i)
  
   n_obser=1000
-  save(out.tab=out.tab,file = file.path(paste("//home/foldersimulations/.../5to1000",id,"simulationsERG_par", p,"observ",n_obser, "sim.RData",sep="_"))) # XXX comment for high dimensional
-  # save(out.tab=out.tab,file = file.path(paste("//home/foldersimulations/.../1000to1000",id,"simulationsERG_par", p,"observ",n_obser, "sim.RData",sep="_"))) # XXX uncomment for high dimensional
+  save(out.tab=out.tab,file = file.path(paste("//home/foldersimulations/.../5to1000",id,"simulationsERG_par", p,"observ",n_obser, "sim.RData",sep="_"))) # XXX comment for high-dimensional
+  # save(out.tab=out.tab,file = file.path(paste("//home/foldersimulations/.../1000to1000",id,"simulationsERG_par", p,"observ",n_obser, "sim.RData",sep="_"))) # XXX uncomment for high-dimensional
   return(out.tab) 
   
   print(id)
