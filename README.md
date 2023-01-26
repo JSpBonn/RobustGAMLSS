@@ -11,7 +11,7 @@ E.g.:
 robust_GaussianLSS(rob=c) , robust_GammaLSS(rob=c), GaussianLSS(), GammaLSS()
 
 
-```{r}
+```r
 # R code for running an example on a bodyfat data set with different covariates:
 
 source{Robust_gamboostLSS_Families.R} # loading robust gamboostLSS families-objects for robust Gaussian and robust Gamma 
