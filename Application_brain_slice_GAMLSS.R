@@ -10,12 +10,12 @@ source(Robust_gamboostLSS_Families.R) # loading some packages and the robust Gam
 stopping=2000
 
 # MAD non cyclic
-set.seed(123) # normal Gamma distribution for GAMLSS with boosting
+set.seed(123) # ordinary gamma distribution for GAMLSS with boosting
 gam3 <- gamboostLSS(formula=medFPQ~bspatial(Y,X), data = brain[,1:3],method = "noncyclic",control = boost_control(mstop=stopping),families=GammaLSS(stabilization = "MAD"))
 
 
 c_value0_05 <- c_generate_Gamma(brain$medFPQ)
-set.seed(123) # robust Gamma distribution for GAMLSS with boosting
+set.seed(123) # robust gamma distribution for GAMLSS with boosting
 gam4 <-gamboostLSS(formula = medFPQ~bspatial(Y,X),data= brain[,1:3], method = "noncyclic", control = boost_control(mstop=stopping), families = robust_GammaLSS(stabilization = "MAD", rob=c_value0_05)) 
 
 set.seed(1234)
@@ -28,7 +28,7 @@ cvr_gam4<- cvrisk(gam4)
 m_gam4 <- mstop(cvr_gam4) # optimal mstop = 197 
 # m_gam4 = 197 # shortcut 
 
-##### parametrisation of gamboostLSS package for Gamma distribution 
+##### parametrisation of gamboostLSS package for gamma distribution 
 ##### additive predictors and early stopping (predictions based on early stopping)
 
 pred_mu <- log(predict(gam3[m_gam3],newdata = brain[,1:3],parameter = "mu",type="response")) # eta_theta_mu, non robust
@@ -38,7 +38,7 @@ pred_sig2 <- log(predict(gam4[m_gam4],newdata = brain[,1:3],parameter = "sigma",
 # same as leaving type = "response" away not not taking the logarithm, but for different parametrisations it might be useful (see below)
 
 
-##### different parametrisation of a Gamma distribution (expection value = mu, variance = mu^2*sigma^2, as in Aeberhard et al., 2021, doi: 10.1007/s11222-020-09979-x)
+##### different parametrisation of a gamma distribution (expection value = mu, variance = mu^2*sigma^2, as in Aeberhard et al., 2021, doi: 10.1007/s11222-020-09979-x)
 ##### additive predictors and predictions on converged coefficients
 
 #pred_mu <- log(predict(gam3,newdata = brain[,1:3],parameter = "mu",type="response"))# eta_theta_mu, non robust
@@ -78,9 +78,9 @@ levelplot(pred_sig2 ~ Y * X, data_example4,main="Eta_sigma robust",xlab=expressi
 
 
 # take care: 
-# making them comparable within a parameter/additive predictor is additional work in R.
+# making them comparable within a parameter/additive predictor is additional work in R
 # produce a grid, where everything is NA except the brain region (you can make it smoother with a tighter grid/lattice and predict these values from the estimated model, too)
-# you can also smooth the boundaries of the brain slice to generate a prettier plot as in Speller et al. 
+# you can also smooth the boundaries of the brain slice to generate a prettier plot (cf. in Speller et al.) 
 
 
 
