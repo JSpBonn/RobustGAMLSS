@@ -166,6 +166,7 @@ robust_GaussianLSS <- function (mu = NULL, sigma = NULL, stabilization = c("none
 # determination of data driven robustness constant "c" for quantiles "tau":
 # use only outcome values with weight = 1
 c_generate_Gamma <- function(outcome , tau = 0.05 ){
+  require(EnvStats)
   log_like_c <- dgamma(outcome,scale = egamma(outcome)$parameters[2],shape=egamma(outcome)$parameters[1],log = TRUE)
   quant_c <- quantile(log_like_c,probs = tau)
   bl <- max(exp(-quant_c)-1,0.000001)       # lower boundary to secure an adequate value of C
