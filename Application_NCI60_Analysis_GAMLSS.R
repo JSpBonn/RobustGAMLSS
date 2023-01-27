@@ -29,13 +29,13 @@ gam1 <-glmboostLSS(formula = KRT19_protein~.,data=data_set, method = "noncyclic"
 
 # cvr_gam1<- cvrisk(gam1) # will need some time due to large p
 # m_stop_gam1 <- mstop(cvr_gam1)
-m_stop_gam1 <-  # shortcut
+m_stop_gam1 <- 1 # shortcut, stops too early not finding any information in the set of covariables (non for both parameters)
 
 g11_coef <- coef(gam1[m_stop_gam1],off2int=T)
 
 
 met=2 # robust gamma distribution with tau=0.05
-c_value0_05 <- c_generate_Gamma(out$KRT19_protein)
+c_value0_05 <- c_generate_Gamma(data_set$KRT19_protein)
 set.seed(100)
 
 gam2 <-glmboostLSS(formula =KRT19_protein~.,data=data_set, method = "noncyclic", control = boost_control(mstop=stopping,nu = 0.01), 
@@ -43,7 +43,7 @@ gam2 <-glmboostLSS(formula =KRT19_protein~.,data=data_set, method = "noncyclic",
 
 # cvr_gam2 <- cvrisk(gam2) # will need some time due to large p
 # m_stop_gam2 <- mstop(cvr_gam2)
-m_stop_gam2 <-  # shortcut
+m_stop_gam2 <- 152 # shortcut
 g2_coef <- coef(gam2[m_stop_gam2],off2int=T)
 
 
