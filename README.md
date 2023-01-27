@@ -31,15 +31,23 @@ stopping=400
 
 set.seed(321)
 glmLSS_robustGaussian <- glmboostLSS(DEXfat~. , method = "noncyclic" , control = boost_control(mstop=stopping) , families = robust_GaussianLSS(stabilization = "MAD",rob=c_value_Gaussian), data = bodyfat)
+
 cvr_robustGaussian <- cvrisk(glmLSS_robustGaussian) # default method is 25-fold bootstrap
-coef(glmLSS_robustGaussian[mstop(cvr_robustGaussian)] , off2int=TRUE , which="") #  coefficients of glmLSS_Gaussian at optimal stopping iteration for cvrisk
+m_stop_robustGaussian <- mstop(cvr_robustGaussian) 
+#m_stop_robustGaussian <- 198 # when no time to run cvrisk
+
+coef(glmLSS_robustGaussian[m_stop_robustGaussian] , off2int=TRUE , which="") #  coefficients of glmLSS_Gaussian at optimal stopping iteration for cvrisk
+plot(glmLSS_robustGaussian)
+
 
 set.seed(321)
 glmLSS_robustGamma <- glmboostLSS(DEXfat~. , method = "noncyclic" , control = boost_control(mstop=stopping) , families = robust_GaussianLSS(stabilization = "MAD",rob=c_value_Gamma), data = bodyfat)
-cvr_robustGamma <- cvrisk(glmLSS_robustGamma) # default method is 25-fold bootstrap
-coef(glmLSS_robustGamma[mstop(cvr_robustGamma)] , off2int=TRUE , which="")  # coefficients of glmLSS_Gamma at optimal stopping iteration for cvrisk
 
-plot(glmLSS_robustGaussian)
+cvr_robustGamma <- cvrisk(glmLSS_robustGamma) # default method is 25-fold bootstrap
+m_stop_robustGamma <- mstop(cvr_robustGamma)
+#m_stop_robustGamma <- 201 # when no time to run cvrisk
+
+coef(glmLSS_robustGamma[m_stop_robustGamma] , off2int=TRUE , which="")  # coefficients of glmLSS_Gamma at optimal stopping iteration for cvrisk
 plot(glmLSS_robustGamma)
 
 
