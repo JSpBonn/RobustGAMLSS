@@ -6,7 +6,7 @@
 
 
 #setwd("//folderapplication")
-source(Robust_gamboostLSS_Families.R) # loading some packages and the robust Gamma families object for GAMLSS gradient boosting
+source("Robust_gamboostLSS_Families.R") # loading some packages and the robust Gamma families object for GAMLSS gradient boosting
 load(data_set_application.RData) # the loaded data is called: "data_set" 
 
 
