@@ -1,11 +1,11 @@
-# NCI60 Application
-# needs potential more memory per cpu
+#### NCI60 Application
+#### needs potential more memory per cpu
 
-# Github Application:
+#### Github Application:
 # library(parallel)
 
 
-#setwd("//folderapplication")
+# setwd("//folderapplication")
 source("Robust_gamboostLSS_Families.R") # loading some packages and the robust Gamma families object for GAMLSS gradient boosting
 load(data_set_application.RData) # the loaded data is called: "data_set" 
 
@@ -16,7 +16,7 @@ p = 14951
 #########################################################################################
 #########################################################################################
 
-# on full data set:
+#### on full data set:
 set.seed(123)
 
 
@@ -49,11 +49,11 @@ g2_coef <- coef(gam2[mstop(cvr_gam2)],off2int=T)
 #########################################################################################
 #########################################################################################
 
-# LOOCV (Leave one out cross validation)
+##### LOOCV (Leave one out cross validation)
 
 #########################################################################################
 
-# for one id separatly saved:
+#### for one id separatly saved:
 
 id = 1 # 1:number_cancer_cell_lines
 
@@ -117,7 +117,7 @@ log_lik <-  lgamma(sigma_pred[1,met]) + sigma_pred[1,met] * (data_set$KRT19_prot
 
 neg_log_lik_matrix[1,met] <-  -log_lik 
 
-# technical details to save the coefficient vector, when one parameter is never updated:
+#### technical details to save the coefficient vector, when one parameter is never updated:
 a <- as.numeric(mstop(gam1[k],parameter = "mu"))
 b <- as.numeric(mstop(gam1[k],parameter = "sigma"))
 
@@ -149,8 +149,8 @@ if (b>0) {
 
 
 
-#rm("gam1")
-#rm("cvr_gam1")
+# rm("gam1")
+# rm("cvr_gam1")
 print(c(i,met))
 
 
@@ -182,7 +182,7 @@ log_lik <-  lgamma(sigma_pred[1,met]) + sigma_pred[1,met] * (data_set$KRT19_prot
 neg_log_lik_matrix[1,met] <-  -log_lik 
 
 
-# technical details to save the coefficient vector, when one parameter is never updated:
+#### technical details to save the coefficient vector, when one parameter is never updated:
 a <- as.numeric(mstop(gam1[k],parameter = "mu"))
 b <- as.numeric(mstop(gam1[k],parameter = "sigma"))
 
@@ -212,14 +212,14 @@ if (b>0) {
 }
 
 
-#rm("gam1")
-#rm("cvr_gam1")
+# rm("gam1")
+# rm("cvr_gam1")
 print(c(i,met))
 
 
 # setwd("//folderapplication")
-#out.tab <- list(coef_matrix=coef_matrix,mstopmatrix=mstopmatrix,mstopmatrix_mu=mstopmatrix_mu,mstopmatrix_sigma=mstopmatrix_sigma,time_matrix=time_matrix,c_value0_05=c_value0_05,mu_pred=mu_pred,sigma_pred=sigma_pred)
-#save(out.tab=out.tab,file = paste(id,"idNCallmethods_tau0_05.RData",sep="_"))
+# out.tab <- list(coef_matrix=coef_matrix,mstopmatrix=mstopmatrix,mstopmatrix_mu=mstopmatrix_mu,mstopmatrix_sigma=mstopmatrix_sigma,time_matrix=time_matrix,c_value0_05=c_value0_05,mu_pred=mu_pred,sigma_pred=sigma_pred)
+# save(out.tab=out.tab,file = paste(id,"idNCallmethods_tau0_05.RData",sep="_"))
 
 
 
