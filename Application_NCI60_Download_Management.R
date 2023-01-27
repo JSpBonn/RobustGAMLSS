@@ -4,7 +4,7 @@
 
 # download to "folderapplication" the two data sets:
 
-# "RNA: Affy HG-U133(A-B)" with GCRMA
+# "RNA: Affy HG-U133(A-B) - GCRMA"
 # "Protein: Antibody Array DTB" with log2
 
 
