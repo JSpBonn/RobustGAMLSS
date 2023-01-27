@@ -30,17 +30,21 @@ m_gam4 = 197 # shortcut
 
 ##### parametrisation of gamboostLSS package for gamma distribution 
 ##### additive predictors and early stopping (predictions based on early stopping)
-
 pred_mu <- log(predict(gam3[m_gam3],newdata = brain[,1:3],parameter = "mu",type="response")) # eta_theta_mu, non robust
 pred_sig <- log(predict(gam3[m_gam3],newdata =brain[,1:3],parameter = "sigma",type="response"))  # eta_theta_sigma, non robust
 pred_mu2 <- log(predict(gam4[m_gam4],newdata = brain[,1:3],parameter = "mu",type="response")) # eta_theta_mu, robust
 pred_sig2 <- log(predict(gam4[m_gam4],newdata = brain[,1:3],parameter = "sigma",type="response")) # eta_theta_sigma, robust
 #### same as leaving type = "response" away and not taking the logarithm, but for different parametrisations it might be useful (see below)
 
+#### predictions after "stopping=2000" iterations:
+# pred_mu <- log(predict(gam3[stopping],newdata = brain[,1:3],parameter = "mu",type="response")) # eta_theta_mu, non robust
+# pred_sig <- log(predict(gam3[stopping],newdata =brain[,1:3],parameter = "sigma",type="response"))  # eta_theta_sigma, non robust
+# pred_mu2 <- log(predict(gam4[stopping],newdata = brain[,1:3],parameter = "mu",type="response")) # eta_theta_mu, robust
+# pred_sig2 <- log(predict(gam4[stopping],newdata = brain[,1:3],parameter = "sigma",type="response")) # eta_theta_sigma, robust
+
 
 ##### different parametrisation of a gamma distribution (expection value = mu, variance = mu^2*sigma^2, as in Aeberhard et al., 2021, doi: 10.1007/s11222-020-09979-x)
 ##### additive predictors and predictions on converged coefficients
-
 # pred_mu <- log(predict(gam3[stopping],newdata = brain[,1:3],parameter = "mu",type="response"))# eta_theta_mu, non robust
 # pred_sig <-log(1/predict(gam3[stopping],newdata = brain[,1:3],parameter = "sigma",type="response")^0.5) # eta_theta_sigma, non robust
 # pred_mu2 <- log(predict(gam4[stopping],newdata = brain[,1:3],type="response",parameter = "mu")) # eta_theta_mu, robust
