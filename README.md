@@ -14,7 +14,7 @@ robust_GaussianLSS(rob=c) , robust_GammaLSS(rob=c), GaussianLSS(), GammaLSS()
 ```r
 # R code for running an example on a bodyfat data set with different covariates:
 
-source{Robust_gamboostLSS_Families.R} # loading robust gamboostLSS families-objects for robust Gaussian and robust Gamma 
+source{"Robust_gamboostLSS_Families.R"} # loading robust gamboostLSS families-objects for robust Gaussian and robust Gamma 
 # file contains also required R-Package "mboost","gamboostLSS", and also only for Gamma distribution relevant packages: "gamlss.dist","EnvStats"
 # file contains also additional functions within the families-objects, which might be relevant for further/own robust families
 
