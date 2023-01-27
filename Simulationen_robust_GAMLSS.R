@@ -4,7 +4,7 @@ rm(list=ls())
 
 
 #setwd("//folderapplication")
-source(Robust_gamboostLSS_Families.R) # loading some packages and the robust Gamma families object for GAMLSS gradient boosting
+source("Robust_gamboostLSS_Families.R") # loading some packages and the robust Gamma families object for GAMLSS gradient boosting
 #setwd("//foldersimulations")
 library(mvtnorm) # for generating the design matrix within the simulations
 # library(parallel) # for cluster
