@@ -4,7 +4,7 @@ library(gamair)
 data(brain) # 1567 observations (no exclusions)
 
 #setwd("//folderapplication")
-source(Robust_gamboostLSS_Families.R) # loading some packages and the robust Gamma families object for GAMLSS gradient boosting
+source("Robust_gamboostLSS_Families.R") # loading some packages and the robust Gamma families object for GAMLSS gradient boosting
 
 
 stopping = 2000
