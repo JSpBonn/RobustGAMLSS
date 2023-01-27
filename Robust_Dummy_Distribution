@@ -8,7 +8,7 @@ library("gamboostLSS")
 
 # Manuel for robust Families-object
 
-# Create your own robust gamboostLSS Families-object from an already existing non-robust Families-object, e.g.,DummyDistribution ~ D(mu,sigma)
+# Create your own robust gamboostLSS Families-object from an already existing non-robust Families-object, e.g., DummyDistribution ~ D(mu,sigma)
 # we can reuse the loss = negative log-likelihood and the ngradient from the previous non-robust Families-object
 
 
