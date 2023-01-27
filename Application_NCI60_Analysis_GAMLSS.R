@@ -27,9 +27,11 @@ set.seed(100)
 
 gam1 <-glmboostLSS(formula = KRT19_protein~.,data=data_set, method = "noncyclic", control = boost_control(mstop=stopping,nu = 0.01), families = GammaLSS(stabilization = "none"))
 
-cvr_gam1<- cvrisk(gam1)
+# cvr_gam1<- cvrisk(gam1) # will need some time due to large p
+# m_stop_gam1 <- mstop(cvr_gam1)
+m_stop_gam1 <-  # shortcut
 
-g11_coef <- coef(gam1[mstop(cvr_gam1)],off2int=T)
+g11_coef <- coef(gam1[m_stop_gam1],off2int=T)
 
 
 met=2 # robust gamma distribution with tau=0.05
@@ -39,9 +41,10 @@ set.seed(100)
 gam2 <-glmboostLSS(formula =KRT19_protein~.,data=data_set, method = "noncyclic", control = boost_control(mstop=stopping,nu = 0.01), 
                    families = robust_GammaLSS(stabilization = "none", rob=c_value0_05)) 
 
-cvr_gam2<- cvrisk(gam2)
-
-g2_coef <- coef(gam2[mstop(cvr_gam2)],off2int=T)
+# cvr_gam2 <- cvrisk(gam2) # will need some time due to large p
+# m_stop_gam2 <- mstop(cvr_gam2)
+m_stop_gam2 <-  # shortcut
+g2_coef <- coef(gam2[m_stop_gam2],off2int=T)
 
 
 
