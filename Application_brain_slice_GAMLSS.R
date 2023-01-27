@@ -7,7 +7,7 @@ data(brain) # 1567 observations (no exclusions)
 source(Robust_gamboostLSS_Families.R) # loading some packages and the robust Gamma families object for GAMLSS gradient boosting
 
 
-stopping=2000
+stopping = 2000
 
 # MAD non cyclic
 set.seed(123) # ordinary gamma distribution for GAMLSS with boosting
@@ -16,15 +16,15 @@ gam3 <- gamboostLSS(formula=medFPQ~bspatial(Y,X), data = brain[,1:3],method = "n
 
 c_value0_05 <- c_generate_Gamma(brain$medFPQ)
 set.seed(123) # robust gamma distribution for GAMLSS with boosting
-gam4 <-gamboostLSS(formula = medFPQ~bspatial(Y,X),data= brain[,1:3], method = "noncyclic", control = boost_control(mstop=stopping), families = robust_GammaLSS(stabilization = "MAD", rob=c_value0_05)) 
+gam4 <- gamboostLSS(formula = medFPQ~bspatial(Y,X),data= brain[,1:3], method = "noncyclic", control = boost_control(mstop=stopping), families = robust_GammaLSS(stabilization = "MAD", rob=c_value0_05)) 
 
 set.seed(1234)
-cvr_gam3<- cvrisk(gam3)
+cvr_gam3 <- cvrisk(gam3)
 m_gam3 <- mstop(cvr_gam3) # optimal mstop = 1480
 # m_gam3 = 1480 # shortcut 
 
 set.seed(1234)
-cvr_gam4<- cvrisk(gam4)
+cvr_gam4 <- cvrisk(gam4)
 m_gam4 <- mstop(cvr_gam4) # optimal mstop = 197 
 # m_gam4 = 197 # shortcut 
 
