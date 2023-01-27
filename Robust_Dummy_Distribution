@@ -1,4 +1,4 @@
-# DO NOT EXECUTE THE FOLLOWING CODE -- DUMMY CODE:
+#### DO NOT EXECUTE THE FOLLOWING CODE -- DUMMY CODE:
 
 library(mboost)
 library("gamboostLSS")
@@ -6,19 +6,19 @@ library("gamboostLSS")
 ############################################################################################################
 ############################################################################################################
 
-# Manuel for robust Families-object
+#### Manuel for robust Families-object
 
-# Create your own robust gamboostLSS Families-object from an already existing non-robust Families-object, e.g., DummyDistribution ~ D(mu,sigma)
-# we can reuse the loss = negative log-likelihood and the ngradient from the previous non-robust Families-object
+#### Create your own robust gamboostLSS Families-object from an already existing non-robust Families-object, e.g., DummyDistribution ~ D(mu,sigma)
+#### we can reuse the loss = negative log-likelihood and the ngradient from the previous non-robust Families-object
 
 
 
-# determination of data driven robustness constant "c" for quantiles "tau":
-# use only outcome values with weight = 1
-c_generate_DummyDistribution <- function(outcome , tau = 0.05 ){
-  log_like_c <- dDummyDistribution(outcome,mu = something(outcome),sigma=something2(outcome),log = TRUE) # log_likelihood (log(density())
+#### determination of data driven robustness constant "c" for quantiles "tau":
+#### use only outcome values with weight = 1 (e.g., when using out of bag (oobag) with weights =0 ))
+c_generate_DummyDistribution <- function(outcome , tau = 0.05){
+  log_like_c <- dDummyDistribution(outcome,mu = reasonable_offset_Mu(outcome),sigma=reasonable_offset_Sigma(outcome),log = TRUE) # log_likelihood (log(density())
   quant_c <- quantile(log_like_c,probs = tau)
-  bl <- max(exp(-quant_c)-1,0.000001)       # lower boundary to secure an adequate value of c
+  bl <- max(exp(-quant_c)-1,0.000001) # lower boundary to secure an adequate value of c
   c_tau <- max(log(bl),0.25,na.rm = F) # lower boundary to secure an adequate value of c
   return(c_tau)
 }
@@ -26,7 +26,7 @@ c_generate_DummyDistribution <- function(outcome , tau = 0.05 ){
 ############################################################################################################
 ############################################################################################################
 
-# robust DummyDistribution Parameter Mu
+#### robust DummyDistribution Parameter Mu
 robust_DummyDistributionMu <- function (mu = NULL, sigma = NULL, stabilization,rob=rob) 
 {
   loss <- function(sigma, y, f) {# y stands for the outcome and must not change the parametrisation or its name, 
@@ -65,13 +65,13 @@ robust_DummyDistributionMu <- function (mu = NULL, sigma = NULL, stabilization,r
   rho <- function(z, rob=rob){      # definition of the log-logistic function and its derivative
     log((1+exp(z+rob))/(1+exp(rob)))}
   
-  mboost::Family(ngradient = ngradient, risk = risk, loss = loss, response = function(f) exp(f), 
+  mboost::Family(ngradient = ngradient, risk = risk, loss = loss, response = function(f) exp(f), # inverse link-function mu
                  offset = offset, check_y = check_y, name = "robust Dummy distribution: mu(log link)") # name it ;)
 }
 
 ############################################################################################################
 
-# robust DummyDistribution Parameter Sigma
+#### robust DummyDistribution Parameter Sigma
 robust_DummyDistributionSigma <- function (mu = NULL, sigma = NULL, stabilization,rob=rob) 
 {
   loss <- function(mu, y, f) {# y stands for the outcome and must not change the parametrisation or its name, 
@@ -84,7 +84,7 @@ robust_DummyDistributionSigma <- function (mu = NULL, sigma = NULL, stabilizatio
   }
   ngradient <- function(y, f, w = 1) {
     n_cal2 <- neg_log_like_dummy_distribution(mu,y,f)  # same as for the loss
-    ngr <-   rho_ab(z=-n_cal2,rob=rob) * inner_partial_derivative(mu,y,f) # chain rule for derivation, inner_partial_derivative(sigma,y,f) =d/df[ncal_1(sigma,y,f)]
+    ngr <-   rho_ab(z=-n_cal2,rob=rob) * inner_partial_derivative(mu,y,f) # chain rule for derivation, inner_partial_derivative(sigma,y,f) =d/df[ncal_2(sigma,y,f)]
     ngr <- stabilize_ngradient(ngr, w = w, stabilization)
     return(ngr)
   }
@@ -110,7 +110,7 @@ robust_DummyDistributionSigma <- function (mu = NULL, sigma = NULL, stabilizatio
   rho <- function(z, rob=rob){ # definition of the log-logistic function and its derivative
     log((1+exp(z+rob))/(1+exp(rob)))}
   
-  mboost::Family(ngradient = ngradient, risk = risk, loss = loss, response = function(f) exp(f), 
+  mboost::Family(ngradient = ngradient, risk = risk, loss = loss, response = function(f) exp(f), # inverse link-function sigma
                  offset = offset, check_y = check_y, name = "robust Dummy distribution: sigma(log link)") # name it ;)
 }
 
@@ -133,7 +133,8 @@ robust_DummyDistribution <- function (mu = NULL, sigma = NULL, stabilization = c
 ############################################################################################################
 ############################################################################################################
 
-# existists already for many distributions, some kind of quantile function:
+#### qfun:
+#### existists already for many distributions, some kind of quantile function:
 qDummyDistribution <- function(p, mu = 0, sigma = 1, lower.tail = TRUE, log.p = FALSE) {
   quantilefunction_of_DummyDistribution} 
 
