@@ -5,12 +5,13 @@ source("Robust_gamboostLSS_Families.R") # loading some packages and the robust G
 # setwd("//foldersimulations")
 library(mvtnorm) # for generating the design matrix within the simulations
 # library(parallel) # for cluster
-library("GJRM") # for Aeberhard et al.
+# library("GJRM") # for Aeberhard et al.
 
 
 Simfunc <- function(id){
   corrupted2 <- c(0.0,0.025,0.05,0.075,0.1,0.15,0.2)
   out.tab <-  vector("list",length(corrupted2))
+  # out.tab2 <-  vector("list",length(corrupted2)) # uncomment for Aeberhard et al.
   half=1000
   n=half
   methodnumber = 6
@@ -303,6 +304,17 @@ Simfunc <- function(id){
     
     } # end of loop over robust methods
     
+     out.tab[[i]] <- list(
+      log_likelihood_opti_test=log_likelihood_opti_test,
+      #log_likelihood_conv_test=log_likelihood_conv_test,
+      #MAE_MSE_all_test=MAE_MSE_all_test,MAE_MSE_all=MAE_MSE_all,
+      coefmatrix_optimal=coefmatrix_optimal,
+      #coefmatrix_all=coefmatrix_all, 
+      cvr=cvr,tuning_s=tuning_s,time_matrix=time_matrix)
+    
+    print(i)
+    
+    
     ####################################################################################################################################################################################################################
     ####################################################################################################################################################################################################################
     
@@ -381,18 +393,7 @@ Simfunc <- function(id){
     #   
     #   rm(list=c("out.rpb","out1"))
     # }
-    # out.tab[[i]] <- list(log_likelihood_conv_test=log_likelihood_conv_test,MAE_MSE_all_test=MAE_MSE_all_test,MAE_MSE_all=MAE_MSE_all, coefmatrix_all=coefmatrix_all, tuning_s=tuning_s,time_matrix=time_matrix)
-    
-   
-  
-    
-    out.tab[[i]] <- list(
-      log_likelihood_opti_test=log_likelihood_opti_test,
-      #log_likelihood_conv_test=log_likelihood_conv_test,
-      #MAE_MSE_all_test=MAE_MSE_all_test,MAE_MSE_all=MAE_MSE_all,
-      coefmatrix_optimal=coefmatrix_optimal,
-      #coefmatrix_all=coefmatrix_all, 
-      cvr=cvr,tuning_s=tuning_s,time_matrix=time_matrix)
+    # out.tab2[[i]] <- list(log_likelihood_conv_test=log_likelihood_conv_test,MAE_MSE_all_test=MAE_MSE_all_test,MAE_MSE_all=MAE_MSE_all, coefmatrix_all=coefmatrix_all, tuning_s=tuning_s,time_matrix=time_matrix)
     
     print(i)
     
@@ -400,6 +401,8 @@ Simfunc <- function(id){
  
   n_obser=1000
   save(out.tab=out.tab,file = file.path(paste("//home/foldersimulations/.../5to1000",id,"simulationsERG_par", p,"observ",n_obser, "sim.RData",sep="_"))) # XXX comment for high-dimensional
+  # save(out.tab2=out.tab2,file = file.path(paste("//home/foldersimulations/.../5to1000",id,"simulationsERG_Aeb_par", p,"observ",n_obser, "sim.RData",sep="_"))) # XXX comment for high-dimensional, uncomment for saving results of Aeb. method
+  
   # save(out.tab=out.tab,file = file.path(paste("//home/foldersimulations/.../1000to1000",id,"simulationsERG_par", p,"observ",n_obser, "sim.RData",sep="_"))) # XXX uncomment for high-dimensional
   return(out.tab) 
   
