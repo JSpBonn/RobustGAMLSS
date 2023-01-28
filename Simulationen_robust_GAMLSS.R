@@ -57,8 +57,9 @@ Simfunc <- function(id){
     # X = rmvnorm(n,mean = mean_X, sigma = sigma_X) # XXX uncomment for high-dimensional
     # colnames(X) <- paste0("x",1:p) # XXX uncomment for high-dimensional
     
-    stopping=2000 # XXX comment for high-dimensional
-    # stopping=1000 # XXX uncomment for high-dimensional
+    #### the maximal number of stopping iterations, for testing use smaller number (Supplement Table S8 suggests that 200-600 will be the optimal stopping iteration for the low-dimensional case)
+    stopping = 2000 # XXX comment for high-dimensional
+    # stopping = 1000 # XXX uncomment for high-dimensional
      
      
       
