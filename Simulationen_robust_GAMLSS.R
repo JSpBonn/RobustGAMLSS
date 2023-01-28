@@ -326,13 +326,13 @@ Simfunc <- function(id){
     # #### Aeberhard et al., 2021 robust method for GAMLSS
     # # library("GJRM") # for Aeberhard et al.  
     #
-    # coefmatrix_all <- matrix(0,nrow=methodenanzahl,ncol=2*p+2)
-    # coefmatrix_optimal <- matrix(0,nrow=methodenanzahl,ncol=2*p+2)
-    # MAE_MSE_all <- matrix(0,ncol=methodenanzahl,nrow=4)
-    # MAE_MSE_all_test <- matrix(0,ncol=methodenanzahl,nrow=4)
+    # coefmatrix_all <- matrix(0,nrow=methodnumber,ncol=2*p+2)
+    # coefmatrix_optimal <- matrix(0,nrow=methodnumber,ncol=2*p+2)
+    # MAE_MSE_all <- matrix(0,ncol=methodnumber,nrow=4)
+    # MAE_MSE_all_test <- matrix(0,ncol=methodnumber,nrow=4)
     # 
-    # log_likelihood_conv_test <-  matrix(0,ncol=methodenanzahl,nrow=1)
-    # time_matrix <- matrix(0,ncol = methodenanzahl,nrow = 1)       
+    # log_likelihood_conv_test <-  matrix(0,ncol=methodnumber,nrow=1)
+    # time_matrix <- matrix(0,ncol = methodnumber,nrow = 1)       
     # 
     # for (z in 2:6) {
     #   method = z
