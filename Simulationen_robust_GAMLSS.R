@@ -1,11 +1,8 @@
-rm(list=ls())
+# rm(list=ls())
 
-
-
-
-#setwd("//folderapplication")
+# setwd("//folderapplication")
 source("Robust_gamboostLSS_Families.R") # loading some packages and the robust Gamma families object for GAMLSS gradient boosting
-#setwd("//foldersimulations")
+# setwd("//foldersimulations")
 library(mvtnorm) # for generating the design matrix within the simulations
 # library(parallel) # for cluster
 library("GJRM") # for Aeberhard et al.
@@ -22,7 +19,7 @@ Simfunc <- function(id){
   cor_strong <-  4
  
    
-  # Data generating
+  #### Data generating
   p=5  # XXX comment for high dimensional
   # p=1000 # XXX uncomment for high dimensional
   
@@ -77,11 +74,11 @@ Simfunc <- function(id){
     a <- sd(toydata$y[1:half])
     set.seed(id+10000*i+100000)
     if (i>1) { #corruption
-      toydata$y[1:numbercorrupted[i]] <- toydata$y[1:numbercorrupted[i]]+cor_strong*a*(-1)^rbinom(numbercorrupted[i], size=1, prob=0.5)# YYY symmetric corruption, uncomment for skewed corruption, choose only one type of corruption
-      toydata$y[(half+1):(half+numbercorrupted[i])] <- toydata$y[(half+1):(half+numbercorrupted[i])]+cor_strong*a*(-1)^rbinom(numbercorrupted[i], size=1, prob=0.5)# YYY symmetric corruption, uncomment for skewed corruption, choose only one type of corruption
+      toydata$y[1:numbercorrupted[i]] <- toydata$y[1:numbercorrupted[i]]+cor_strong*a*(-1)^rbinom(numbercorrupted[i], size=1, prob=0.5)# YYY symmetric corruption, comment for skewed corruption, choose only one type of corruption
+      toydata$y[(half+1):(half+numbercorrupted[i])] <- toydata$y[(half+1):(half+numbercorrupted[i])]+cor_strong*a*(-1)^rbinom(numbercorrupted[i], size=1, prob=0.5)# YYY symmetric corruption, comment for skewed corruption, choose only one type of corruption
       
-      #toydata$y[1:numbercorrupted[i]] <- toydata$y[1:numbercorrupted[i]]+cor_strong*a # comment for skewed corruption, choose only one type of corruption
-      #toydata$y[(half+1):(half+numbercorrupted[i])] <- toydata$y[(half+1):(half+numbercorrupted[i])]+cor_strong*a # comment for skewed corruption, choose only one type of corruption
+      # toydata$y[1:numbercorrupted[i]] <- toydata$y[1:numbercorrupted[i]]+cor_strong*a # uncomment for skewed corruption, choose only one type of corruption
+      # toydata$y[(half+1):(half+numbercorrupted[i])] <- toydata$y[(half+1):(half+numbercorrupted[i])]+cor_strong*a # uncomment for skewed corruption, choose only one type of corruption
       }
       
     n_test=1000
@@ -306,14 +303,14 @@ Simfunc <- function(id){
     
     } # end of loop over robust methods
     
-    ##################################################### ##################################################### ##################################################### #####################################################
-    ##################################################### ##################################################### ##################################################### #####################################################
+    ####################################################################################################################################################################################################################
+    ####################################################################################################################################################################################################################
     
-    # following interesting as comparison
-    ##################################################### ##################################################### ##################################################### #####################################################
+    #### following interesting as comparison
+    ####################################################################################################################################################################################################################
     # 
-    # # only for low dimensinoal cases (and comparably small amounts of parameters p)
-    # # Aeberhard et al., 2021 robust method for GAMLSS
+    # #### only for low dimensinoal cases (and comparably small amounts of parameters p)
+    # #### Aeberhard et al., 2021 robust method for GAMLSS
     # # library("GJRM") # for Aeberhard et al.  
     #
     # coefmatrix_all <- matrix(0,nrow=methodenanzahl,ncol=2*p+2)
@@ -357,13 +354,13 @@ Simfunc <- function(id){
     #   
     #   true_mu <- 1 + 2 * toydata2$x1 - toydata2$x2
     #   
-    #   #MAE_MSE_all[1,method]<- sum(abs(mu_resi-true_mu))
-    #   #MAE_MSE_all[2,method]<- sum((mu_resi-true_mu)^2)
+    #   # MAE_MSE_all[1,method]<- sum(abs(mu_resi-true_mu))
+    #   # MAE_MSE_all[2,method]<- sum((mu_resi-true_mu)^2)
     #   
     #   true_sigma <- 0.5 - 0.25 *toydata2$x1 + 0.5 * toydata2$x3
     #   
-    #   #MAE_MSE_all[3,method]<- sum(abs(sigma_resi-true_sigma))
-    #   #MAE_MSE_all[4,method]<- sum((sigma_resi-true_sigma)^2)
+    #   # MAE_MSE_all[3,method]<- sum(abs(sigma_resi-true_sigma))
+    #   # MAE_MSE_all[4,method]<- sum((sigma_resi-true_sigma)^2)
     #   
     #   mat_all <- as.matrix(cbind(matrix(1,ncol = 1,nrow=half),toydata_test[,1:5]))
     #   mu_resi <- mat_all%*%mu_est
