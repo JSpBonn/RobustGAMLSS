@@ -101,18 +101,18 @@ Simfunc <- function(id){
     toydata_test <-data.frame(X) # XXX uncomment for high-dimensional
     toydata_test$y <- rnorm(n_test, mean = 1 + 2 * x1 - x2, sd = exp(0.5 - 0.25 * x1 + 0.5 * x3))
 
-    # generate the robustness constants for the robust method
+    #### generate the robustness constants for the robust method
     tuning_s <- c(1,2,10, c_generate_Gaussian(toydata$y[1:half],tau=0.01), c_generate_Gaussian(toydata$y[1:half],tau=0.05), c_generate_Gaussian(toydata$y[1:half],tau=0.10))
-    #  tuning_s[1] is only placeholder for the non-robust method
+    ####  tuning_s[1] is only placeholder for the non-robust method
     
-    #coefmatrix_all <- matrix(0,nrow=methodnumber,ncol=2*p+2)
+    # coefmatrix_all <- matrix(0,nrow=methodnumber,ncol=2*p+2)
     coefmatrix_optimal <- matrix(0,nrow=methodnumber,ncol=2*p+2)
     cvr <- matrix(0,ncol=methodnumber,nrow=3)
-    #MAE_MSE_all <- matrix(0,ncol=methodnumber,nrow=4)
-    #MAE_MSE_optimal<- matrix(0,ncol=methodnumber,nrow=4)
+    # MAE_MSE_all <- matrix(0,ncol=methodnumber,nrow=4)
+    # MAE_MSE_optimal<- matrix(0,ncol=methodnumber,nrow=4)
     
-    #MAE_MSE_all_test <- matrix(0,ncol=methodnumber,nrow=4)
-    #MAE_MSE_optimal_test<- matrix(0,ncol=methodnumber,nrow=4)
+    # MAE_MSE_all_test <- matrix(0,ncol=methodnumber,nrow=4)
+    # MAE_MSE_optimal_test<- matrix(0,ncol=methodnumber,nrow=4)
     
     # log_likelihood_conv_test <-  matrix(0,ncol=methodnumber,nrow=1)
     
@@ -131,12 +131,12 @@ Simfunc <- function(id){
     time_matrix[1,method] <- time_b-time_a  
     
     # #### converged coefficients 
-    #if (min(mstop(gam1[stopping],parameter = "mu"),mstop(gam1[stopping],parameter = "sigma"))>0) {
+    # if (min(mstop(gam1[stopping],parameter = "mu"),mstop(gam1[stopping],parameter = "sigma"))>0) {
     #  coefmatrix_all[method,] <- c(coef(gam1[stopping]$mu,off2int = T,which=""),coef(gam1[stopping]$sigma,off2int = T,which=""))
-    #}
-    #if (min(mstop(gam1[stopping],parameter = "mu"),mstop(gam1[stopping],parameter = "sigma"))==0) {
+    # }
+    # if (min(mstop(gam1[stopping],parameter = "mu"),mstop(gam1[stopping],parameter = "sigma"))==0) {
     #  coefmatrix_all[method,] <- c(coef(gam1[stopping]$mu,off2int = T,which=""),gam1[stopping]$sigma$offset,rep(0,p))
-    #}
+    # }
     # mat_all <- as.matrix(cbind(matrix(1,ncol = 1,nrow=half),toydata[1:half,1:p]))
     # mu_est <- as.matrix(coef(gam1[stopping]$mu,off2int = TRUE,which=""))
     #  if (min(mstop(gam1[stopping],parameter = "mu"),mstop(gam1[stopping],parameter = "sigma"))>0) {
@@ -156,7 +156,7 @@ Simfunc <- function(id){
     #  true_sigma <- 0.5 - 0.25 *toydata2$x1 + 0.5 * toydata2$x3
     #
     #  MAE_MSE_all[3,method]<- sum(abs(sigma_resi-true_sigma))
-    # MAE_MSE_all[4,method]<- sum((sigma_resi-true_sigma)^2)
+    #  MAE_MSE_all[4,method]<- sum((sigma_resi-true_sigma)^2)
     #
     #  mat_all <- as.matrix(cbind(matrix(1,ncol = 1,nrow=half),toydata_test[,1:5]))
     #  mu_resi <- mat_all%*%mu_est
