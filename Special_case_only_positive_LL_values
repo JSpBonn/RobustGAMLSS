@@ -2,7 +2,7 @@ In exceptional cases their might be (nearly) exclusively non-negative (positive)
 (not conditioned on the design matrix X due to first offset estimates based on the outcome Y).
 
 Within the proposed implementations of the functions
-"c_generate_Gaussian()" and "c_generate_Gamma"
+"c_generate_Gaussian()" and "c_generate_Gamma()"
 we made sure that this circumstance does not lead to an error using the maximum of a small boundary and the calculated value before taking the logarithm to secure the functionality.
 However, it might lead to overerly robust/non-robust results.
 
