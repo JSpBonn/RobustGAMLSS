@@ -1,0 +1,49 @@
+In exceptional cases their might be (nearly) exclusively non-negative (positive) log-likelihood values regarding the assumed distribution of the outcome 
+(not conditioned on the design matrix X due to first offset estimates based on the outcome Y).
+
+Within the proposed implementations of the functions
+"c_generate_Gaussian()" and "c_generate_Gamma"
+we made sure that this circumstance does not lead to an error using the maximum of a small boundary and the calculated value before taking the logarithm to secure the functionality.
+However, it might lead to overerly robust/non-robust results.
+
+
+When and in which situations could this problem, at least theoretically, occur?
+
+In terms of the algorithm: when we have less observations with a negative log-likelihood (LL) value than the prespecified amount tau
+-> a lower choice of tau might already solve this problem, because the most of the data points (a amount of 1 − tau ) seems to follow the offset distribution already quite well
+
+In addition, it is not expected that the log-likelihood values (regarding the optimization problem) will on average decrease.
+
+An example, where this phenomenon could occur is a peak normal distribution y ~ N (μ = 0, σ = 0.1):
+When using our offset estimates for ˆμ = mean(y) and ˆσ = sd(y) (via "c_generate_Gaussian"), it leads to around 10% negative LL values,
+which would still be acceptable for our default tau = 0.05 value. 
+An even smaller variance for a random variable y ∼ N (μ = 0, σ = 0.01) has only around 2 out of 1000 LL below zero and a variance of σ = 0.001 none below zero.
+
+However, when one observation deviates clearly from the others (because being an outlier), all LL values would decrease towards negative real values due to a worse initial offset
+estimate of (ˆμ, ˆσ) and a higher variance.
+-> practically speaking, this phenomenon occurs quite rarely and a different choice of the offset values is likely to resolve this problem.
+
+
+Last option: Changes within the loss functions and potential adaptations for the interpretation of LL values
+
+In principle, the actual magnitude of the log-likelihood is of course not relevant for the optimization problem. 
+Therefore, we can add the same fixed constant to each individual LL value and would not change the gradient of the (negative) LL,
+but only the overall log-likelihood magnitude.
+This means that we can move the LL values as we like without changing the scale of the outcome or the gradient. 
+Hence, we can set our robustness constant c_tau independently of tau to a positive real number,e.g., to 10
+Afterwarts, we can shift all LL values by the same constant so that q_tau fulfills equation 11 of our article.
+Eq11: c_tau = log(exp(−q_tau ) − 1, where q_tau determines the tau-quantile of the log-likelihood values
+
+Changes of log-likelihood values, however, might be considered as rather counterintuitive and can potentially lead to other consequences for the approach (e.g., when comparing results)
+and in comparability issues for boosting outputs.
+
+
+
+
+
+
+
+
+
+
+
