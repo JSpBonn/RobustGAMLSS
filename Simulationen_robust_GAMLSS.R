@@ -395,8 +395,8 @@ Simfunc <- function(id){
     #   rm(list=c("out.rpb","out1"))
     # }
     # out.tab2[[i]] <- list(log_likelihood_conv_test=log_likelihood_conv_test,MAE_MSE_all_test=MAE_MSE_all_test,MAE_MSE_all=MAE_MSE_all, coefmatrix_all=coefmatrix_all, tuning_s=tuning_s,time_matrix=time_matrix)
-    
-    print(i)
+    #
+    # print(i)
     
   } # comment when running only an example (end loop of i)
  
