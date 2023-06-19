@@ -125,7 +125,7 @@ Simfunc <- function(id){
     ##################################################### ##################################################### ##################################################### #####################################################
     
     method=1
-    set.seed(1234+id)
+    set.seed(1234+id) # non robust GaussianLSS
     time_a <-proc.time()[3]  
     gam1 <-glmboostLSS(y~.,data=toydata,method = "noncyclic",control = boost_control(mstop=stopping,risk = "oobag"),families = GaussianLSS(stabilization = "MAD"),weights = ws)
     cvr[1,method]  <- as.integer(which.min(risk(gam1,merge=T))-2)
@@ -218,7 +218,7 @@ Simfunc <- function(id){
     method = z
     c_0=tuning_s[method]
     
-    set.seed(1234+id) # non robust GaussianLSS
+    set.seed(1234+id) # robust GaussianLSS 
     time_a <-proc.time()[3]  
     gam1 <-glmboostLSS(y~.,data=toydata,method = "noncyclic",control = boost_control(mstop=stopping,risk = "oobag"),weights = ws,families = robust_GaussianLSS(stabilization = "MAD",rob=c_0)) 
     cvr[1,method]  <- as.integer(which.min(risk(gam1,merge=T))-2)
