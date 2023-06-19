@@ -96,7 +96,7 @@ Simfunc <- function(id){
    
     
     toydata_test <- data.frame(x1 = x1, x2 = x2, x3 = x3 ,x4 = x4 , x5 = x5) # XXX comment for high-dimensional
-    toydata_test <-data.frame(X) # XXX uncomment for high-dimensional
+    # toydata_test <-data.frame(X) # XXX uncomment for high-dimensional
     toydata_test$y <-rgamma(n= n_test, scale = exp( 1 + 1.5 * x1 - 0.75 * x2)/exp(0.5 - 0.25 * x1 + 0.5 * x3) , shape = exp(0.5 - 0.25 * x1 + 0.5 * x3))
     
     
